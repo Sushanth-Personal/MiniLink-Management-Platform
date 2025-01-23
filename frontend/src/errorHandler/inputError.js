@@ -11,3 +11,13 @@ export const validateEmail = (email) => {
     
     return { value: password, error };
   };
+
+  export const validateContact = (contact) => {
+    // Check if the contact is a valid 10-digit phone number
+    const contactPattern = /^[0-9]{10}$/;
+    const error = contactPattern.test(contact)
+      ? ""
+      : "Please enter a valid 10-digit phone number.";
+    
+    return { value: contact, error };
+  };

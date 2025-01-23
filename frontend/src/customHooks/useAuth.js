@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../Contexts/UserContext";
 import { api } from "../api/api"; 
-
+import Cookies from "js-cookie";
 const useAuth = () => {
   const { setUserData, setUserId, setIsLoggedIn} = useUserContext();
   const navigate = useNavigate();
@@ -11,9 +11,13 @@ const useAuth = () => {
 
     const authenticateUser = async () => {
       try {
-        const userId = localStorage.getItem("userId");
+        let userId = localStorage.getItem("userId");
+        if (!userId) {
+          userId = Cookies.get("userId"); // Get userId from cookies
+        }
         
         if (!userId) {
+          console.log("userId not found in localStorage or cookies");
           // Redirect to login if userId is not in localStorage
           navigate("/login");
           return;
@@ -21,13 +25,13 @@ const useAuth = () => {
       
       
         // Fetch user data from the backend
-        const userResponse = await api.get(`/protected/user/${userId}`);
+        const userResponse = await api.get(`/api/user`,{withCredentials: true});
         console.log("userResponse", userResponse);
         if (userResponse.data) {
-          setUserId(userResponse.data.user._id); // Set userId in context
+          setUserId(userResponse.data._id); // Set userId in context
           setUserData({
             ...userResponse.data.user,
-            userId: userResponse.data.user._id,
+            userId: userResponse.data._id,
           }); // Set full userData in context
           setIsLoggedIn(true);
         } else {

@@ -8,6 +8,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import {
   validateEmail,
   validatePassword,
+  validateContact
 } from "../../errorHandler/inputError";
 
 const LoginPage = () => {
@@ -49,12 +50,14 @@ const LoginPage = () => {
       setErrors({
         username: "",
         email: "",
+        contact:"",
         password: "",
         confirmPassword: "",
       });
       setUserDataState({
         username: "",
         email: "",
+        contact:"",
         password: "",
       });
       setConfirmPassword("");
@@ -62,30 +65,29 @@ const LoginPage = () => {
     const handleRegister = async (e) => {
       e.preventDefault();
       setIsLoading(true);
-      const { username, email, password} = userData;
-      console.log(username, email, password);
+      const { username, email,contact, password} = userData;
+      console.log(username, email,contact, password);
       const emailError = validateEmail(email);
       const passwordError = validatePassword(password);
+      const contactError = validateContact(contact);
       const confirmPasswordError = password !== confirmPassword ? "Passwords do not match" : "";
   
       setErrors({
         username: !username ? "Username is required" : "",
         email: emailError?.error || "",
+        contact: contactError?.error || "",
         password: passwordError?.error || "",
         confirmPassword: confirmPasswordError,
       });
   
-      console.log(username);
-      console.log(errors);
-  
-      if (!username || emailError?.error || passwordError?.error || confirmPasswordError) {
+      if (!username || emailError?.error || contactError?.error || passwordError?.error || confirmPasswordError) {
         setIsLoading(false);
         return;
       }
   
   console.log(username, email, password);
       try {
-        const response = await registerUser(username, email, password);
+        const response = await registerUser(username, email,contact, password);
         setIsLoading(false);
   
         if (response === "Success") {
@@ -137,8 +139,6 @@ const LoginPage = () => {
           const completeUserData = { ...response.user, userId: response.user._id };
           setIsLoggedIn(true);
           setUserData(completeUserData);
-          localStorage.setItem("userId", response.user._id);
-          localStorage.setItem("userData", JSON.stringify(completeUserData));
           navigate("/");
         } else {
           if(response==="Invalid email"){

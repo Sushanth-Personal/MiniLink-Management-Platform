@@ -1,6 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode"; // Ensure you're using the correct import here
-
+import Cookies from 'js-cookie';
 let baseURL;
 
 if (import.meta.env.VITE_API_STATUS === "DEVELOPMENT") {
@@ -25,7 +25,7 @@ function getCookie(name) {
   }
   
 api.interceptors.request.use((config) => {
-    if (config.url.includes("/protected")) {
+    if (config.url.includes("/api")) {
       try {
         const accessToken = getCookie('accessToken'); // Read token from cookie
   
@@ -95,42 +95,42 @@ export const checkAuthentication = async () => {
 };
 
 export const loginUser = async (email, password) => {
-    console.log(email, password);
-    // Check if identifier and password are provided
-    if (!email || !password) {
-      console.error("Identifier and password are required");
-      return { message: "Identifier and password are required" };
-    }
-  
-    try {
-      const response = await axios.post(`${baseURL}/auth/login`, {
-        email,
-        password,
-      });
-      console.log(response.data);
-      const { user, accessToken } = response.data;
-  
-      // Set cookies with HttpOnly, Secure, and SameSite flags
-      const oneHour = 3600; // Cookie expiration time in seconds
-  
-      // Setting userId in cookie
-      document.cookie = `userId=${user._id}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${oneHour}`;
-  
-      // Setting accessToken in cookie
-      document.cookie = `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${oneHour}`;
-      
-      localStorage.setItem("userId", user._id);
-      return { message: "Success", user, accessToken };
-    } catch (error) {
-      console.error("Error logging in:", error.response?.data || error.message);
-  
-      return error.response?.data.message || "Login failed";
-    }
-  };
+  console.log(email, password);
+  // Check if identifier and password are provided
+  if (!email || !password) {
+    console.error("Identifier and password are required");
+    return { message: "Identifier and password are required" };
+  }
+
+  try {
+    const response = await axios.post(`${baseURL}/auth/login`, {
+      email,
+      password,
+    }, {
+      withCredentials: true,  // Ensure cookies are included in the request
+    });
+    
+    console.log(response.data);
+    const { user } = response.data;
+
+    // Log cookies (if not HttpOnly)
+    console.log("Cookies after login:", Cookies.get('userId'));
+
+    // Store userId in localStorage
+    localStorage.setItem("userId", user._id);
+
+    return { message: "Success", user };
+  } catch (error) {
+    console.error("Error logging in:", error.response?.data || error.message);
+
+    return error.response?.data.message || "Login failed";
+  }
+};
+
   
 export const registerUser = async (username, email,contact,password) => {
   try {
-    console.log(username, email, password);
+    console.log(username, email,contact, password);
     const response = await axios.post(`${baseURL}/auth/register`, {
       username,
       email,
