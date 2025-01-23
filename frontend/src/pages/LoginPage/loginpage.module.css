@@ -1,0 +1,275 @@
+.loginPage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow-y: hidden;
+
+}
+
+
+
+
+.leftContainer {
+  flex: 1;
+  position: relative;
+  height: 100%;
+}
+
+.leftContainer .leftBackground {
+  width: 92%;
+  height: auto;
+  object-fit: cover;
+  z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.logo{
+  position: absolute;
+  top: 28px;
+  left: 30px;
+  z-index: 2;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover {
+  background-color: white;
+  color: #b3b3b3 !important; /* Enforce text color */
+  -webkit-text-fill-color: #b3b3b3 !important; /* Ensures autofill text uses the specified color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill background from flashing */
+}
+
+.loginContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.loginContainer nav{
+  margin-top: 26px;
+  height: 39px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 39px;
+}
+
+.loginContainer .navSignUp{
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color:#3B3C51;
+  margin:0px 13px;
+}
+
+.loginContainer .navLogin{
+  background-color:#1B48DA;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color:white;
+  margin:0px 13px;
+  padding:10px 14px;
+}
+.heading{
+  position: absolute;
+  top:127px;
+  left:100px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.loginContainer .loginForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 411px;
+  width: 100%;
+  min-width: 313px;
+  margin-top: 134px;
+}
+
+.emptySpace{
+  width: 100%;
+  height: 40px;
+}
+
+.passwordForm,
+.emailForm,
+.userNameForm,
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.passwordForm{
+  margin-bottom: 27px;
+}
+
+
+
+.emailForm input,
+.passwordForm input,
+.userNameForm input,
+.contactForm input {
+  color: #b3b3b3;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #3b3c51;
+  max-width: 411px;
+  width: 100%;
+  padding: 9px;
+  padding-left: 18px;
+  transform: 150ms ease-in-out;
+}
+
+.emailForm input:focus,
+.passwordForm input:focus,
+.userNameForm input:focus,
+.contactForm input:focus {
+  outline: none;
+  border: 1px solid #1a5fff;
+  transform: scale(1.06);
+  color: black;
+}
+
+.loginButton {
+  width: 100%;
+  aspect-ratio: 7.63;
+  background-color: #1B48DA;
+  box-shadow: 0px 4px 10px rgba(233, 68, 75, 0.25);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: white;
+  position: relative;
+  border: none;
+  transition: box-shadow 150ms ease-in-out,
+    transform 150ms ease-in-out;
+}
+
+/* Active (pressed-down) state */
+.loginButton:active {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.2);
+  transform: scale(0.98);
+  font-weight: 700;
+}
+
+.loginButton:hover {
+  filter: brightness(1.2);
+  cursor: pointer;
+  font-weight: 700;
+}
+.loginButton div {
+  border-radius: 50%;
+  background-color: rgba(217, 217, 217, 1);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: flex-start;
+  position: absolute;
+  left: 15px;
+}
+
+.signUpText {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #3B3C51;
+  text-align: center;
+  display: flex;
+}
+
+.signUpText a {
+  color: #1B48DA;
+  text-decoration: none;
+  transform: 150ms ease-in-out;
+}
+
+.signUpText a:hover {
+  cursor: pointer;
+  filter: brightness(0.8);
+  transform: scale(1.05);
+}
+
+@media screen and (max-width: 1080px) {
+  .behindContainer .leftImage {
+    width: 25%;
+    aspect-ratio: 1;
+    left: 3%;
+  }
+
+  .behindContainer .rightImage {
+    width: 10%;
+    aspect-ratio: 0.5;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .behindContainer .leftImage {
+    top: 120px;
+  }
+
+  .loginPage .arrowBox {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .loginContainer .loginForm {
+    min-width: 90%;
+  }
+
+  .behindContainer .leftImage {
+    top: 30px;
+  }
+
+  .loginPage nav {
+    padding-left: 20px;
+  }
+}
+
+.error {
+  color: #ff4141;
+  height: 5px;
+}
+
+.errorField input {
+  border: 2px solid #ff4141; /* Red border for error input */
+}
+
+.errorField label {
+  color: #ff4141; /* Red color for the label */
+}
+
+.errorField input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Optional: Red shadow on focus */
+}
