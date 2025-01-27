@@ -17,7 +17,7 @@ ConnectDB();
 
 // Middlewares
 const corsOptions = {
-  origin: ['http://localhost:4173'],  // Frontend URL
+  origin: ['http://localhost:4173','https://minilink-frontend.onrender.com'],  // Frontend URL
   credentials: true,  // Allow cookies and credentials to be sent with requests
 };
 
