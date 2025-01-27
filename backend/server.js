@@ -17,7 +17,7 @@ ConnectDB();
 
 // Middlewares
 const corsOptions = {
-  origin: ['http://localhost:4173','https://minilink-frontend.onrender.com'],  // Frontend URL
+  origin: ['http://localhost:4174','https://minilink-frontend.onrender.com'],  // Frontend URL
   credentials: true,  // Allow cookies and credentials to be sent with requests
 };
 
@@ -36,4 +36,13 @@ app.use('/',UrlRoute);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Successfully Connected with PORT: ", PORT);
+});
+
+
+process.on('SIGINT', () => {
+  console.log("Server shutting down...");
+  server.close(() => {
+    console.log("Closed remaining connections");
+    process.exit(0);  // Exit after connections are closed
+  });
 });

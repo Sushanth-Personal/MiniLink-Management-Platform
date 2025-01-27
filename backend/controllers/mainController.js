@@ -12,6 +12,7 @@ const getUser = async (req, res) => {
   try {
     // Get the userId from cookies
     const userIdFromCookie = req.cookies.userId;
+    console.log("UserIdfromcookie", userIdFromCookie);
 
     // Check if the userId is a valid ObjectId format
     const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)

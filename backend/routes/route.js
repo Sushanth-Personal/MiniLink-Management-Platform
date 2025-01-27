@@ -4,7 +4,6 @@ const {
   getUser,
   updateUser, 
   postUrl,
-  redirectUrl
 
 } = require("../controllers/mainController.js");
 

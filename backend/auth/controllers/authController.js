@@ -80,7 +80,7 @@ const loginUser = async (req, res) => {
     res.cookie("userId", user._id, {
       httpOnly: process.env.NODE_ENV === "production" ? true : false,
       secure: process.env.NODE_ENV === "production" ? true : false,
-      sameSite: "None",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: oneHour * 1000, // Cookie expiration time in milliseconds
       path: "/",
     });
@@ -89,7 +89,7 @@ const loginUser = async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: process.env.NODE_ENV === "production" ? true : false,
       secure: process.env.NODE_ENV === "production" ? true : false,
-      sameSite: "None",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: oneHour * 1000, // Cookie expiration time in milliseconds
       path: "/",
     });

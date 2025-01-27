@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Ensure you're using the correct import here
 import Cookies from 'js-cookie';
 let baseURL;
 
@@ -72,8 +71,6 @@ export const loginUser = async (email, password) => {
     console.log(response.data);
     const { user } = response.data;
 
-    // Log cookies (if not HttpOnly)
-    console.log("Cookies after login:", Cookies.get('accessToken'));
 
     // Store userId in localStorage
     localStorage.setItem("userId", user._id);
