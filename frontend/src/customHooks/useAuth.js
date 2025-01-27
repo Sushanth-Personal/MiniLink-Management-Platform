@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../Contexts/UserContext";
-import { api } from "../api/api"; 
-import Cookies from "js-cookie";
+// import { api } from "../api/api"; 
+import axios from "axios";
 const useAuth = () => {
   const { setUserData, setUserId, setIsLoggedIn} = useUserContext();
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const useAuth = () => {
   useEffect(() => {
     const authenticateUser = async () => {
       try {
-        const userResponse = await api.get(`/api/user`, { withCredentials: true });
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/user`, { withCredentials: true });
         console.log("userResponse", userResponse);
         if (userResponse.data) {
           setUserId(userResponse.data._id); // Set userId in context
