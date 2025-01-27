@@ -14,6 +14,6 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0', // Bind to all interfaces for external access
     port: 4173, // Port for the preview server
-    allowedHosts: ['https://minilink-frontend.onrender.com/'], // Allow the frontend Render URL
-  }
+    allowedHosts: ['minilink-frontend.onrender.com'], // Corrected hostname
+  },
 });
