@@ -1,0 +1,67 @@
+.react-datepicker__input-container input {
+    color: transparent; 
+    background-color: transparent; 
+    border: none; 
+    width: 100%;
+    padding: 2px 0;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    cursor: pointer;
+    position: absolute;
+    left:0;
+    top:0px;
+    z-index:100;
+    height: 100%;
+  }
+
+  .react-datepicker__input-container{
+    width: 100%;
+    height: 100%;
+  }
+
+  .react-datepicker-wrapper{
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Hover effect */
+  .react-datepicker__input-container input:hover {
+    background-color: transparent; 
+    width: 100%;
+  }
+  
+  /* Remove border and outline on focus */
+  .react-datepicker__input-container input:focus {
+    outline: none; 
+    border: none; 
+  }
+  
+  /* Optional: Add focus styles like changing background or adding shadow */
+  .react-datepicker__input-container input:focus-visible {
+    background-color: transparent;
+  }
+
+  .react-datepicker{
+    position: absolute;
+    left:-300px;
+    top:-200px;
+    height: 153px;
+    width: 242px;
+    border:none;
+  }
+  .react-datepicker__triangle{
+    display: none;
+  }
+
+  .react-datepicker__month-container{
+    border:1px solid #aeaeae;
+    height: 155px;
+    overflow: hidden;
+  }
+
+  .react-datepicker__time-container {
+    border:1px solid #aeaeae;
+    width: 90px;
+    height: 155px;
+  }

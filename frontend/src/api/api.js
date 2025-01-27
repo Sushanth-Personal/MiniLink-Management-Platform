@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 let baseURL;
 
 if (import.meta.env.VITE_API_STATUS === "DEVELOPMENT") {
-  baseURL = "http://localhost:5000";
+  baseURL = `http://localhost:${import.meta.env.VITE_API_PORT}`;
 }
 
 if (import.meta.env.VITE_API_STATUS === "PRODUCTION") {
@@ -15,20 +15,12 @@ export const api = axios.create({
   baseURL: `${baseURL}`,
 });
 
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      return parts.pop().split(';').shift();
-    }
-    return null;
-  }
   
 api.interceptors.request.use((config) => {
     if (config.url.includes("/api")) {
       try {
-        const accessToken = getCookie('accessToken'); // Read token from cookie
-  
+        const accessToken = Cookies.get('accessToken');
+        console.log("Yes cookies", accessToken);
         if (!accessToken) {
           window.location.href = "/login";
           return Promise.reject("No access token found");
@@ -114,7 +106,7 @@ export const loginUser = async (email, password) => {
     const { user } = response.data;
 
     // Log cookies (if not HttpOnly)
-    console.log("Cookies after login:", Cookies.get('userId'));
+    console.log("Cookies after login:", Cookies.get('accessToken'));
 
     // Store userId in localStorage
     localStorage.setItem("userId", user._id);
@@ -147,4 +139,15 @@ export const registerUser = async (username, email,contact,password) => {
 };
 
 
-
+export const postUrl = async (url, remarks, expiry) => {
+  try {
+    console.log(url, remarks, expiry);
+    const response = await api.post("/api/url", { url, remarks, expiry }, {
+      withCredentials: true,
+    });
+    return response.data; // Return the data directly
+  } catch (error) {
+    console.error("Error posting URL:", error.response.data.message);
+    return error.response.data.message; // Handle error by returning null or an empty array
+  }
+}

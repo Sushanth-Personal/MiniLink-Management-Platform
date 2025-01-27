@@ -14,7 +14,7 @@ function App() {
   let baseURL;
 
   if (import.meta.env.VITE_API_STATUS === "DEVELOPMENT") {
-    baseURL = "http://localhost:5000";
+    baseURL = `http://localhost:${import.meta.env.VITE_API_PORT}`;
   }
 
   if (import.meta.env.VITE_API_STATUS === "PRODUCTION") {

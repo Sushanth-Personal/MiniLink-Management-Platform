@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 // Middleware function to authenticate token from cookies
 const authenticateToken = async (req, res, next) => {
   // Extract token and user ID from cookies\
-  console.log("Cookies:", req.cookies);  // Log the entire cookie object
+
   const token = req.cookies.accessToken;
   const userId = req.cookies.userId;
   console.log("Token:", token, "userId:", userId);

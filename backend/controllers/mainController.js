@@ -4,8 +4,9 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
-
-
+const Url = require("../models/urlModel");
+const crypto = require('crypto');
+const base62 = require('base62'); // A Base62 encoding library
 
 const getUser = async (req, res) => {
   try {
@@ -96,7 +97,73 @@ const updateUser = async (req, res) => {
   }
 };
 
+
+const postUrl = async (req, res) => {
+  const { url, expiry, remarks } = req.body;
+
+  // Get userId from the middleware-augmented req object
+  const userId = req.user.id;
+
+  if (!url) {
+    return res.status(400).json({ message: "URL is required." });
+  }
+
+  try {
+    // Generate a SHA-256 hash of the URL
+    const hash = crypto.createHash('sha256').update(url + Date.now().toString()).digest('hex');
+
+    // Convert the hash to a Base62 string (to shorten the URL)
+    const shortUrl = base62.encode(Buffer.from(hash, 'hex').readUIntBE(0, 6)); // Only take part of the hash for a shorter URL
+
+    // Create a new Url document
+    const newUrl = new Url({
+      userId, // Use userId from the token
+      url,
+      shortUrl, // Short URL using Base62 encoding
+      expiry: expiry ? new Date(expiry) : null,
+      remarks: remarks || "",
+    });
+
+    // Save to the database
+    const savedUrl = await newUrl.save();
+
+    res.status(201).json({
+      message: "Shortened URL created successfully.",
+      shortUrl: savedUrl.shortUrl,
+      data: savedUrl,
+    });
+  } catch (error) {
+    console.error("Error creating shortened URL:", error);
+    res.status(500).json({ message: "Server error. Unable to create shortened URL." });
+  }
+};
+
+const redirectUrl = async (req, res) => {
+  const { shortUrl } = req.params;
+  console.log(shortUrl);
+  try {
+    // Find the URL from the database using the short URL
+    const urlRecord = await Url.findOne({ shortUrl });
+
+    if (!urlRecord) {
+      return res.status(404).json({ message: "URL not found." });
+    }
+
+    // Check if the URL has expired
+    if (urlRecord.expiry && new Date(urlRecord.expiry) < new Date()) {
+      return res.status(400).json({ message: "The URL has expired." });
+    }
+    console.log(urlRecord.url);
+    // Redirect to the original URL
+    return res.redirect(urlRecord.url);
+  } catch (error) {
+    console.error("Error redirecting to the URL:", error);
+    return res.status(500).json({ message: "Server error. Unable to redirect." });
+  }
+}
 module.exports = {
   getUser,
   updateUser,
+  postUrl,
+  redirectUrl
 };
