@@ -8,24 +8,9 @@ const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const authenticateUser = async () => {
       try {
-        let userId = localStorage.getItem("userId");
-        if (!userId) {
-          userId = Cookies.get("userId"); // Get userId from cookies
-        }
-        
-        if (!userId) {
-          console.log("userId not found in localStorage or cookies");
-          // Redirect to login if userId is not in localStorage
-          navigate("/login");
-          return;
-        }
-      
-      
-        // Fetch user data from the backend
-        const userResponse = await api.get(`/api/user`,{withCredentials: true});
+        const userResponse = await api.get(`/api/user`, { withCredentials: true });
         console.log("userResponse", userResponse);
         if (userResponse.data) {
           setUserId(userResponse.data._id); // Set userId in context
@@ -35,7 +20,6 @@ const useAuth = () => {
           }); // Set full userData in context
           setIsLoggedIn(true);
         } else {
-          // Handle case where user data is not found
           console.error("User data not found");
           navigate("/login"); // Redirect to login
         }
@@ -44,9 +28,10 @@ const useAuth = () => {
         navigate("/login"); // Redirect to login on error
       }
     };
-
+  
     authenticateUser();
-  }, [navigate, setUserData, setUserId]);
+  }, [navigate, setUserData, setUserId, setIsLoggedIn]); // All dependencies are correctly listed
+  
 };
 
 export default useAuth;
