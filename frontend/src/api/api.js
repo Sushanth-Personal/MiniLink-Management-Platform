@@ -16,39 +16,6 @@ export const api = axios.create({
 });
 
   
-api.interceptors.request.use((config) => {
-    if (config.url.includes("/api")) {
-      try {
-        const accessToken = Cookies.get('accessToken');
-        console.log("Yes cookies", accessToken);
-        if (!accessToken) {
-          window.location.href = "/login";
-          return Promise.reject("No access token found");
-        }
-  
-        // Decode token to check expiration
-        const decodedAccessToken = jwtDecode(accessToken);
-        const accessTokenExpiryTime = decodedAccessToken.exp * 1000 - Date.now();
-  
-        if (accessTokenExpiryTime <= 0) {
-          // Token expired
-          console.warn("Access token expired. Redirecting to login...");
-          window.location.href = "/login";
-          return Promise.reject("Access token expired");
-        }
-  
-        // No need to manually add token to headers; it will be handled by the browser automatically
-        return config;
-      } catch (error) {
-        console.error("Failed to decode token:", error);
-        window.location.href = "/login";
-        return Promise.reject(error);
-      }
-    } else {
-      return config;
-    }
-  });
-  
 
 // Interceptor for handling unauthorized responses
 api.interceptors.response.use(
