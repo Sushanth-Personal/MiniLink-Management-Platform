@@ -78,8 +78,10 @@ const loginUser = async (req, res) => {
     console.log(process.env.NODE_ENV);
     // Set userId cookie
     res.cookie("userId", user._id, {
-      httpOnly: process.env.NODE_ENV === "production" ? true : false,
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      // httpOnly: process.env.NODE_ENV === "production" ? true : false,
+      // secure: process.env.NODE_ENV === "production" ? true : false,
+      httpOnly:true,
+      secure:true,
       sameSite: "None",
       maxAge: oneHour * 1000, // Cookie expiration time in milliseconds
       path: "/",
@@ -87,8 +89,10 @@ const loginUser = async (req, res) => {
 
     // Set accessToken cookie
     res.cookie("accessToken", accessToken, {
-      httpOnly: process.env.NODE_ENV === "production" ? true : false,
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      // httpOnly: process.env.NODE_ENV === "production" ? true : false,
+      // secure: process.env.NODE_ENV === "production" ? true : false,
+      httpOnly:true,
+      secure:true,
       sameSite: "None",
       maxAge: oneHour * 1000, // Cookie expiration time in milliseconds
       path: "/",
