@@ -10,6 +10,8 @@ export const UserProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState({});
+  const [editLinkClicked, setEditLinkClicked] = useState(0);
+  const [pageUrlData, setPageUrlData] = useState({});
 
   const value = useMemo(
     () => ({
@@ -19,6 +21,10 @@ export const UserProvider = ({ children }) => {
       setIsLoggedIn,
       userData,
       setUserData,
+      editLinkClicked,
+      setEditLinkClicked,
+      pageUrlData,
+      setPageUrlData
     }),
     [
       userId,
@@ -27,6 +33,10 @@ export const UserProvider = ({ children }) => {
       setIsLoggedIn,
       userData,
       setUserData,
+      editLinkClicked,
+      setEditLinkClicked,
+      pageUrlData,
+      setPageUrlData
     ]
   );
 

@@ -26,7 +26,11 @@ const urlSchema = new mongoose.Schema(
       type: Date,
       required: false,
     },
-
+    clicks: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

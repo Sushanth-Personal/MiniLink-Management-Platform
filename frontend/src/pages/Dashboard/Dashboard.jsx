@@ -3,7 +3,8 @@ import useAuth from "../../customHooks/useAuth";
 import styles from "./dashboard.module.css";
 import Modal from "../../components/Modal/Modal";
 import CreateNewModal from "../../components/CreateNewModal/CreateNewModal";
-
+import ResultTable from "../../components/ResultTable/ResultTable";
+import {useUserContext} from "../../Contexts/UserContext";
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -55,6 +56,7 @@ const Dashboard = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(null);
+  const {  setEditLinkClicked } = useUserContext();
   const handleCreateNew = () => {
     setModalType("createNew"); // Set modal type based on need
     setShowModal(true);
@@ -63,6 +65,12 @@ const Dashboard = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setModalType(null); // Reset modal type on close
+  };
+
+  const handleEditLinkClick =(rowId) => {
+    setModalType("edit");
+    setShowModal(true);
+    setEditLinkClicked(rowId);
   };
 
   // Wrap the Modal component with the HOC to inject dynamic content
@@ -168,7 +176,7 @@ const Dashboard = () => {
           </div>
         </nav>
         <div className={styles.mainContent}>
-          <div className={styles.paddingContainer}></div>
+          {state.linkActive && (<ResultTable handleEditLinkClick={handleEditLinkClick}/>)}
         </div>
       </div>
       {showModal && (
