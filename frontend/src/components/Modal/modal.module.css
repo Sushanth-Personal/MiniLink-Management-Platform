@@ -48,7 +48,7 @@
     border: none;
     font-size: 20px;
     cursor: pointer; /* Pointer cursor for button */
-    color: #888; /* Gray color for close button */
+    color: white; /* Gray color for close button */
     margin-right: 20px;
   }
   
@@ -78,7 +78,7 @@
     margin-top: 20px; /* Space above button */
   }
   
-  .modalBody button:hover {
+  .modalBodyButton:hover {
     background-color: #0056b3; /* Darker blue on hover */
   }
   

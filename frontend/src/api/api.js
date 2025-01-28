@@ -115,3 +115,54 @@ export const postUrl = async (url, remarks, expiry) => {
     return error.response.data.message; // Handle error by returning null or an empty array
   }
 }
+
+
+export const updateUrl = async (url, remarks, expiry) => {
+  try {
+    console.log(url, remarks, expiry);
+    const response = await api.put("/api/url", { url, remarks, expiry }, {
+      withCredentials: true,
+    });
+    return response.data; // Return the data directly
+  } catch (error) {
+    console.error("Error posting URL:", error.response.data.message);
+    return error.response.data.message; // Handle error by returning null or an empty array
+  }
+}
+
+export const deleteUrl = async (rowId) => {
+  try {
+    console.log(rowId);
+    const response = await api.delete(`/api/url/${rowId}`, {
+      withCredentials: true,
+    });
+    return response.data; // Return the data directly
+  } catch (error) {
+    console.error("Error deleting URL:", error.response.data.message);
+    return error.response.data.message; // Handle error by returning null or an empty array
+  }
+}
+
+export const updateUser = async (updatedData) => {
+  try {
+    const response = await api.put(`/api/user/`, updatedData, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error.response.data.message);
+    return error.response.data.message;
+  }
+};
+
+export const deleteUser = async () => {
+  try {
+    const response = await api.delete(`/api/user/`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting user:", error.response.data.message);
+    return error.response.data.message;
+  }
+};

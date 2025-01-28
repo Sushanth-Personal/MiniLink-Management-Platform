@@ -2,31 +2,56 @@ import styles from "./createnewmodal.module.css";
 import Switch from "../Switch/Switch";
 import DatePicker from "../DatePicker/CustomDatePicker";
 import { useState, useEffect } from "react";
-import { postUrl } from "../../api/api";
+import { postUrl, updateUrl } from "../../api/api";
 import { useUserContext } from "../../Contexts/UserContext";
 import { format, parseISO } from "date-fns";
 
 const CreateNewModal = (WrappedComponent) => {
   return function ModalContent({ modalType, ...props }) {
-    const [expiry, setExpiry] = useState("Select Expiry Date and Time");
+    const [expiry, setExpiry] = useState(
+      "Select Expiry Date and Time"
+    );
     const [remarks, setRemarks] = useState("");
     const [url, setUrl] = useState("");
     const [expirySwitch, setExpirySwitch] = useState(true);
-    const { pageUrlData, editLinkClicked } = useUserContext();
+    const { setPageUrlData,pageUrlData, editLinkClicked, setCloseModal,setRefreshData} =
+      useUserContext();
     const [data, setData] = useState(pageUrlData[editLinkClicked]);
 
     useEffect(() => {
       if (data && data.expiry) {
         // Format the existing expiry date
-        const formattedExpiry = format(parseISO(data.expiry), "MMM dd, yyyy, hh:mm a");
+        const formattedExpiry = format(
+          parseISO(data.expiry),
+          "MMM dd, yyyy, hh:mm a"
+        );
         setExpiry(formattedExpiry);
         console.log("Formatted preloaded expiry:", formattedExpiry);
       }
+      if (data) {
+        setUrl(data.url);
+        setRemarks(data.remarks);
+      }
       return () => {
-        setData(null);
+        console.log("Nodal cleanup");
+        // setData(null);
+        setPageUrlData([]);
+        // setEditLinkClicked(null);
       };
     }, [data]);
 
+    const handleSave = async () => {
+      try {
+        console.log(url, remarks, expiry);
+        const response = await updateUrl(url, remarks, expiry);
+        console.log(response.data);
+        setData(response.data);
+        setCloseModal(true);
+        setRefreshData(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     const handleSwitchChange = (state) => {
       setExpirySwitch(state); // Directly set the new state
     };
@@ -49,12 +74,6 @@ const CreateNewModal = (WrappedComponent) => {
         return;
       }
 
-      const requestData = {
-        url,
-        remarks,
-        expiry: expirySwitch ? expiry : null,
-      };
-
       try {
         const response = await postUrl(url, remarks, expiry);
         console.log(response.data);
@@ -64,6 +83,8 @@ const CreateNewModal = (WrappedComponent) => {
         setRemarks("");
         setExpiry("Select Expiry Date and Time");
         setExpirySwitch(true);
+        setCloseModal(true);
+        setRefreshData(true);
       } catch (error) {
         console.error("Error creating link:", error);
         alert("Failed to create link. Please try again.");
@@ -111,7 +132,9 @@ const CreateNewModal = (WrappedComponent) => {
             <div className={styles.datePicker}>
               <div className={styles.displayField}>{expiry}</div>
               <div className={styles.datePickerContainer}>
-                <DatePicker handleDateSelection={handleDateSelection} />
+                <DatePicker
+                  handleDateSelection={handleDateSelection}
+                />
               </div>
             </div>
           </div>
@@ -127,7 +150,10 @@ const CreateNewModal = (WrappedComponent) => {
             >
               Clear
             </button>
-            <button onClick={handleCreateNew} className={styles.createButton}>
+            <button
+              onClick={handleCreateNew}
+              className={styles.createButton}
+            >
               Create new
             </button>
           </div>
@@ -144,7 +170,7 @@ const CreateNewModal = (WrappedComponent) => {
               <input
                 type="url"
                 placeholder="Enter URL to be shortened"
-                value={url || data.url}
+                value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 required
               />
@@ -157,7 +183,7 @@ const CreateNewModal = (WrappedComponent) => {
               </span>
               <textarea
                 placeholder="Add remarks"
-                value={remarks || data.remarks}
+                value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 required
               />
@@ -172,7 +198,9 @@ const CreateNewModal = (WrappedComponent) => {
             <div className={styles.datePicker}>
               <div className={styles.displayField}>{expiry}</div>
               <div className={styles.datePickerContainer}>
-                <DatePicker handleDateSelection={handleDateSelection} />
+                <DatePicker
+                  handleDateSelection={handleDateSelection}
+                />
               </div>
             </div>
           </div>
@@ -188,8 +216,11 @@ const CreateNewModal = (WrappedComponent) => {
             >
               Clear
             </button>
-            <button onClick={handleCreateNew} className={styles.createButton}>
-              Create new
+            <button
+              onClick={handleSave}
+              className={styles.createButton}
+            >
+              Save
             </button>
           </div>
         </>

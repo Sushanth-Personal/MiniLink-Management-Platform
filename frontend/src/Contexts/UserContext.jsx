@@ -12,7 +12,9 @@ export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState({});
   const [editLinkClicked, setEditLinkClicked] = useState(0);
   const [pageUrlData, setPageUrlData] = useState({});
-
+  const [closeModal, setCloseModal] = useState(false);
+  const [refreshData, setRefreshData] = useState(false);
+  const [deleteAccount, setDeleteAccount] = useState(false);
   const value = useMemo(
     () => ({
       userId,
@@ -24,7 +26,13 @@ export const UserProvider = ({ children }) => {
       editLinkClicked,
       setEditLinkClicked,
       pageUrlData,
-      setPageUrlData
+      setPageUrlData,
+      closeModal,
+      setCloseModal,
+      refreshData,
+      setRefreshData,
+      deleteAccount,
+      setDeleteAccount
     }),
     [
       userId,
@@ -36,7 +44,13 @@ export const UserProvider = ({ children }) => {
       editLinkClicked,
       setEditLinkClicked,
       pageUrlData,
-      setPageUrlData
+      setPageUrlData,
+      closeModal,
+      setCloseModal,
+      refreshData,
+      setRefreshData,
+      deleteAccount,
+      setDeleteAccount
     ]
   );
 

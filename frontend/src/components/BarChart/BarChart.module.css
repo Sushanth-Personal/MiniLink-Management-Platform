@@ -1,0 +1,44 @@
+.chartContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Spacing between bars */
+    padding: 16px;
+  }
+  
+  .barWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Space between label and bar */
+  }
+  
+  .label {
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 100px; /* Ensures labels align vertically */
+  }
+  
+  .bar {
+    background-color: #4caf50; /* Green bar color */
+    height: 24px;
+    border-radius: 12px; /* Smooth, rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px; /* Space for click count inside the bar */
+    color: white; /* Text color for the click count */
+    font-weight: bold;
+  }
+  
+  .clickCount {
+    font-size: 12px;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .clickCountRight {
+   
+    color: #000;
+  }

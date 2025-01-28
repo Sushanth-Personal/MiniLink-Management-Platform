@@ -3,11 +3,12 @@ const mongoose = require("mongoose");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const Url = require("../models/urlModel");
-const crypto = require('crypto');
-const base62 = require('base62'); // A Base62 encoding library
+const crypto = require("crypto");
+const base62 = require("base62"); // A Base62 encoding library
 const Analytics = require("../models/analyticsModel");
+const userAgent = require("user-agent"); // Import the user-agent package
 const getUser = async (req, res) => {
   try {
     // Get the userId from cookies
@@ -20,11 +21,13 @@ const getUser = async (req, res) => {
       : null;
 
     if (!userId) {
-      return res.status(400).json({ message: "Invalid userId format" });
+      return res
+        .status(400)
+        .json({ message: "Invalid userId format" });
     }
 
     // Fetch user data from the database using the userId, excluding the password field
-    const userData = await User.findById(userId).select('-password');
+    const userData = await User.findById(userId).select("-password");
 
     if (!userData) {
       return res.status(404).json({ message: "User not found" });
@@ -34,71 +37,80 @@ const getUser = async (req, res) => {
     return res.status(200).json(userData);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "An error occurred while retrieving user data" });
+    return res.status(500).json({
+      message: "An error occurred while retrieving user data",
+    });
   }
 };
-
-
 
 const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { username, email, password, newPassword, theme } = req.body;
-
-  // Validate and convert the ID
-  const userId = mongoose.Types.ObjectId.isValid(id)
-    ? new mongoose.Types.ObjectId(id)
-    : null;
-
-  if (!userId) {
-    return res.status(400).json({ message: "Invalid userId format" });
-  }
   try {
-    // Find the user by ID
-    const user = await User.findById(userId);
+    const userIdFromCookie = req.cookies.userId;
+
+    // Validate userId format
+    const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)
+      ? new mongoose.Types.ObjectId(userIdFromCookie)
+      : null;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid userId format" });
+    }
+
+    const user= await User.findById(userId);
+
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if password and newPassword are provided
-    if (password && newPassword) {
-      // Verify the current password
-      const isMatch = await user.comparePassword(
-        password,
-        user.password
-      );
-      if (!isMatch) {
-        return res
-          .status(401)
-          .json({ error: "Invalid current password" });
-      }
+    const { username, email, contact } = req.body;
+    
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.contact = contact || user.contact;
 
-      // Hash the new password
+    await user.save();  
 
-      // Update the user's password, username, and email
-      user.password = newPassword;
-      if (username) user.username = username;
-      if (email) user.email = email;
-    } else {
-      // If no password verification is needed, just update username and email
-      if (username) user.username = username;
-      if (email) user.email = email;
-    }
-    if (theme) {
-      user.theme = theme;
-    }
-    // Save the updated user
-    await user.save();
+    return res.status(200).json({ message: "User data updated successfully" });
 
-    res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    console.error("Error updating user:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the user" });
+    console.error(error);
+    return res.status(500).json({
+      message: "An error occurred while updating user data",
+    });
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const userIdFromCookie = req.cookies.userId;
 
+    // Validate userId format
+    const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)
+      ? new mongoose.Types.ObjectId(userIdFromCookie)
+      : null;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid userId format" });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+     // Clear all cookies
+     res.clearCookie('userId', { httpOnly: true, secure: true, sameSite: 'Strict' });
+     res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'Strict' });
+
+    return res.status(200).json({ message: "User deleted and cookies cleared successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "An error occurred while deleting user",
+    });
+  }
+}
 const postUrl = async (req, res) => {
   const { url, expiry, remarks } = req.body;
 
@@ -111,10 +123,15 @@ const postUrl = async (req, res) => {
 
   try {
     // Generate a SHA-256 hash of the URL
-    const hash = crypto.createHash('sha256').update(url + Date.now().toString()).digest('hex');
+    const hash = crypto
+      .createHash("sha256")
+      .update(url + Date.now().toString())
+      .digest("hex");
 
     // Convert the hash to a Base62 string (to shorten the URL)
-    const shortUrl = base62.encode(Buffer.from(hash, 'hex').readUIntBE(0, 6)); // Only take part of the hash for a shorter URL
+    const shortUrl = base62.encode(
+      Buffer.from(hash, "hex").readUIntBE(0, 6)
+    ); // Only take part of the hash for a shorter URL
 
     // Create a new Url document
     const newUrl = new Url({
@@ -135,15 +152,49 @@ const postUrl = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating shortened URL:", error);
-    res.status(500).json({ message: "Server error. Unable to create shortened URL." });
+    res.status(500).json({
+      message: "Server error. Unable to create shortened URL.",
+    });
+  }
+};
+
+const updateUrl = async (req, res) => {
+  const { url, expiry, remarks } = req.body;
+
+  // Get userId from the middleware-augmented req object
+  const userId = req.user.id;
+
+  if (!url) {
+    return res.status(400).json({ message: "URL is required." });
+  }
+
+  try {
+    const urlReq = await Url.findOne({ url });
+
+    urlReq.url = url;
+    urlReq.expiry = expiry ? new Date(expiry) : null;
+    urlReq.remarks = remarks || "";
+    // Save to the database
+    const savedUrl = await urlReq.save();
+
+    res.status(201).json({
+      message: "Shortened URL created successfully.",
+      shortUrl: savedUrl.shortUrl,
+      data: savedUrl,
+    });
+  } catch (error) {
+    console.error("Error creating shortened URL:", error);
+    res.status(500).json({
+      message: "Server error. Unable to create shortened URL.",
+    });
   }
 };
 
 const redirectUrl = async (req, res) => {
   const { shortUrl } = req.params;
-  
+
   console.log(shortUrl);
-  
+
   try {
     // Find the URL from the database using the short URL
     const urlRecord = await Url.findOne({ shortUrl });
@@ -154,65 +205,53 @@ const redirectUrl = async (req, res) => {
 
     // Check if the URL has expired
     if (urlRecord.expiry && new Date(urlRecord.expiry) < new Date()) {
-      return res.status(400).json({ message: "The URL has expired." });
+      return res
+        .status(400)
+        .json({ message: "The URL has expired." });
     }
 
     console.log(urlRecord.url);
 
-    // Update analytics for the redirect
-    const deviceType = req.headers['user-agent'].toLowerCase();  // Simple device detection using the user-agent header
-    const deviceCategory = deviceType.includes('mobile') ? 'mobile' : deviceType.includes('tablet') ? 'tablet' : 'desktop';
+    // Capture the IP address (if behind a proxy, use req.headers['x-forwarded-for'])
+    const ipAddress = req.ip;
 
-    // Find or create analytics record for the URL
-    const analyticsRecord = await Analytics.findOne({ urlId: urlRecord._id });
+    // Capture the device type using the User-Agent header
+    const device = userAgent.parse(req.headers["user-agent"]);
+    let deviceCategory = "desktop"; // Default to desktop
 
-    if (analyticsRecord) {
-      // If the record exists, check if there's a click entry for today
-      const today = new Date().toISOString().split('T')[0]; // Get today's date (YYYY-MM-DD)
-
-      // Check if there's already a click entry for today
-      let todayClick = analyticsRecord.clicks.find(click => click.date.toISOString().split('T')[0] === today);
-
-      if (todayClick) {
-        // Increment the device count for today
-        todayClick.devices[deviceCategory] = (todayClick.devices[deviceCategory] || 0) + 1;
-      } else {
-        // Create a new click entry for today
-        analyticsRecord.clicks.push({
-          date: new Date(),
-          devices: { [deviceCategory]: 1 },
-        });
-      }
-
-      await analyticsRecord.save(); // Ensure the analytics record is saved
-    } else {
-      // If no analytics record, create a new one
-      const newAnalyticsRecord = new Analytics({
-        userId: urlRecord.userId,
-        urlId: urlRecord._id,
-        clicks: [
-          {
-            date: new Date(),
-            devices: { [deviceCategory]: 1 },
-          },
-        ],
-      });
-
-      await newAnalyticsRecord.save(); // Save the new record
+    if (device.isMobile) {
+      deviceCategory = "mobile";
+    } else if (device.isTablet) {
+      deviceCategory = "tablet";
     }
 
+    // Create a new analytics record for the click
+    const newAnalyticsRecord = new Analytics({
+      userId: urlRecord.userId, // Reference to the user who created the URL
+      urlId: urlRecord._id, // Reference to the URL being tracked
+      url: urlRecord.url,
+      shortUrl: urlRecord.shortUrl,
+      date: new Date(), // Current date and time
+      devices: deviceCategory, // The device category (mobile, desktop, tablet)
+      ipAddress, // Store IP address
+      deviceType: deviceCategory, // Store device type
+    });
+
+    await newAnalyticsRecord.save(); // Save the new analytics record
+
     // Increment the clicks field in the UrlRecord
-    urlRecord.clicks = (urlRecord.clicks || 0) + 1;  // Ensure it's incremented correctly
-    await urlRecord.save();  // Save the updated URL record
+    urlRecord.clicks = (urlRecord.clicks || 0) + 1; // Ensure it's incremented correctly
+    await urlRecord.save(); // Save the updated URL record
 
     // Redirect to the original URL
     return res.redirect(urlRecord.url);
   } catch (error) {
     console.error("Error redirecting to the URL:", error);
-    return res.status(500).json({ message: "Server error. Unable to redirect." });
+    return res
+      .status(500)
+      .json({ message: "Server error. Unable to redirect." });
   }
 };
-
 
 const getUrlsByUser = async (req, res) => {
   try {
@@ -221,13 +260,15 @@ const getUrlsByUser = async (req, res) => {
 
     // Check if the userId exists in the cookie
     if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: User ID is missing." });
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User ID is missing." });
     }
 
     // Get the page number and limit from the query parameters (default to page 1 and limit 5)
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    console.log("limit",limit);
+    console.log("limit", limit);
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
 
@@ -242,7 +283,7 @@ const getUrlsByUser = async (req, res) => {
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(totalUrls / limit);
-    console.log(urls,page, totalPages, totalUrls);
+    console.log(urls, page, totalPages, totalUrls);
     // Respond with the paginated URLs and pagination info
     res.status(200).json({
       urls,
@@ -256,11 +297,189 @@ const getUrlsByUser = async (req, res) => {
   }
 };
 
+const getAnalytics = async (req, res) => {
+  try {
+    const userIdFromCookie = req.cookies.userId;
+
+    // Validate userId format
+    const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)
+      ? new mongoose.Types.ObjectId(userIdFromCookie)
+      : null;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid userId format" });
+    }
+
+    // Get page and limit from query parameters (with defaults)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Calculate the number of documents to skip based on the page
+    const skip = (page - 1) * limit;
+
+    // Query the Analytics model with pagination
+    const analyticsData = await Analytics.find({ userId })
+      .populate("urlId", "originalUrl shortUrl") // Populate URL details from the Url model
+      .skip(skip) // Skip the appropriate number of documents
+      .limit(limit) // Limit the number of documents returned
+      .lean();
+
+    if (!analyticsData || analyticsData.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No analytics data found for this user" });
+    }
+
+    // Get the total count of analytics data for pagination info
+    const totalCount = await Analytics.countDocuments({ userId });
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Respond with analytics data and pagination info
+    res.status(200).json({
+      data: analyticsData,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getClicks = async (req, res) => {
+  try {
+    const userIdFromCookie = req.cookies.userId;
+
+    // Validate userId format
+    const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)
+      ? new mongoose.Types.ObjectId(userIdFromCookie)
+      : null;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid userId format" });
+    }
+
+    // Aggregate analytics data for the user
+    const analyticsData = await Analytics.aggregate([
+      { $match: { userId: userId } }, // Match records with the given userId
+      {
+        $group: {
+          _id: {
+            day: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            deviceType: "$deviceType",
+          }, // Group by day and device type
+          count: { $sum: 1 }, // Count clicks for each device type per day
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.day", // Group by day
+          totalClicks: { $sum: "$count" }, // Total clicks for the day
+          clicksPerDevice: {
+            $push: {
+              deviceType: "$_id.deviceType", // Extract deviceType as a string
+              clicks: "$count",
+            },
+          }, // Collect device types and their counts for each day
+        },
+      },
+      {
+        $group: {
+          _id: null, // Group everything to calculate overall totals
+          totalClicks: { $sum: "$totalClicks" }, // Grand total clicks
+          clicksPerDevice: {
+            $push: {
+              deviceType: "$clicksPerDevice.deviceType", // Flatten deviceType
+              clicks: { $sum: "$clicksPerDevice.clicks" }, // Flatten device data
+            },
+          },
+          clicksPerDay: {
+            $push: {
+              day: "$_id",
+              totalClicks: "$totalClicks",
+            },
+          }, // Add day-wise total clicks
+        },
+      },
+    ]);
+
+    if (!analyticsData || analyticsData.length === 0) {
+      return res.status(404).json({ error: "No analytics data found" });
+    }
+
+    // Final adjustment: flatten `clicksPerDevice`
+    const finalClicksPerDevice = analyticsData[0].clicksPerDevice.map((device) => ({
+      deviceType: device.deviceType[0], // Extract single deviceType as string
+      clicks: device.clicks,
+    }));
+
+    res.status(200).json({
+      totalClicks: analyticsData[0].totalClicks,
+      clicksPerDevice: finalClicksPerDevice, // Use flattened device data
+      clicksPerDay: analyticsData[0].clicksPerDay,
+    });
+  } catch (error) {
+    console.error("Error fetching clicks:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const deleteUrl = async (req, res) => {
+  try {
+    const userIdFromCookie = req.cookies.userId;
+
+    // Validate userId format
+    const userId = mongoose.Types.ObjectId.isValid(userIdFromCookie)
+      ? new mongoose.Types.ObjectId(userIdFromCookie)
+      : null;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid userId format" });
+    }
+
+    const { urlIdParam } = req.params;
+    console.log("typeof urlIdParam", typeof urlIdParam);
+        // Validate urlId format
+        const urlId = mongoose.Types.ObjectId.isValid(urlIdParam)
+        ? new mongoose.Types.ObjectId(urlIdParam)
+        : null;
+
+    // Validate urlId format
+    if (!mongoose.Types.ObjectId.isValid(urlId)) {
+      return res.status(400).json({ message: "Invalid URL ID format" });
+    }
+
+    // Find and delete the URL belonging to the user
+    const deletedUrl = await Url.findOneAndDelete({ _id: urlId, userId });
+
+    if (!deletedUrl) {
+      return res.status(404).json({ message: "URL not found or does not belong to the user" });
+    }
+
+    res.status(200).json({ message: "URL deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting URL:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 module.exports = {
   getUser,
   updateUser,
+  deleteUser,
   postUrl,
+  updateUrl,
   redirectUrl,
-  getUrlsByUser
+  getUrlsByUser,
+  getAnalytics,
+  getClicks,
+  deleteUrl
 };

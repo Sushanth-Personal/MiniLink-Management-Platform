@@ -11,12 +11,12 @@ import axios from "axios";
  * @param {number} limit - The number of items per page.
  * @returns {Object} An object containing the data, error, loading state, pagination info, and a refetch function.
  */
-const useFetch = (url, options = {}, fetchOnMount = true, page = 1, limit = 5) => {
+const useFetch = (url, options = {}, fetchOnMount = true, page = null, limit = null) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
-    currentPage: page,
+    currentPage: page || 1,
     totalPages: 1,
     totalItems: 0,
   });
@@ -24,17 +24,24 @@ const useFetch = (url, options = {}, fetchOnMount = true, page = 1, limit = 5) =
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Create dynamic query params object
+      const params = {};
+      if (page !== null) params.page = page;
+      if (limit !== null) params.limit = limit;
+
       const response = await axios.get(url, {
         ...options,
-        params: { page, limit }, // Send page and limit as query params
+        params, // Dynamically pass params only when needed
       });
-    
-      setData(response.data.urls); // Assuming the data structure has `urls` in the response
-      setPagination({
-        currentPage: response.data.page,
-        totalPages: response.data.totalPages,
-        totalItems: response.data.totalUrls,
-      });
+      console.log(response.data);
+      setData(response.data); // Set response data
+      if (response.data.pagination) {
+        setPagination({
+          currentPage: response.data.pagination.currentPage,
+          totalPages: response.data.pagination.totalPages,
+          totalItems: response.data.pagination.totalItems,
+        });
+      }
       setError(null);
     } catch (err) {
       setError(err.message || "Something went wrong!");
@@ -44,19 +51,11 @@ const useFetch = (url, options = {}, fetchOnMount = true, page = 1, limit = 5) =
     }
   };
 
-  // Refetch when URL, page, or limit changes
   useEffect(() => {
     if (fetchOnMount) {
       fetchData();
     }
-  }, [url, page, limit]); // Refetch only if these values change
-
-  // Prevent refetch if the data is already available and valid
-  useEffect(() => {
-    if (page === 1 && !data) {
-      fetchData(); // Ensure data is fetched if it's the first page and data is not already fetched
-    }
-  }, [page, limit, data]); // Triggered only when page, limit, or data changes
+  }, [url, page, limit]); // Refetch when these values change
 
   return { data, error, loading, pagination, refetch: fetchData };
 };

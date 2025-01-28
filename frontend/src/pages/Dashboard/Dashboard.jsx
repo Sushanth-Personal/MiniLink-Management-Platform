@@ -1,10 +1,14 @@
-import React, { useReducer, useState } from "react";
+import { useReducer, useState, useEffect } from "react";
 import useAuth from "../../customHooks/useAuth";
 import styles from "./dashboard.module.css";
 import Modal from "../../components/Modal/Modal";
+import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import CreateNewModal from "../../components/CreateNewModal/CreateNewModal";
 import ResultTable from "../../components/ResultTable/ResultTable";
-import {useUserContext} from "../../Contexts/UserContext";
+import BarChart from "../../components/BarChart/BarChart";
+import ProfileData from "../../components/ProfileData/ProfileData";
+import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";  
+import { useUserContext } from "../../Contexts/UserContext";
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -55,19 +59,41 @@ const Dashboard = () => {
   // Use the reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [modalType, setModalType] = useState(null);
-  const {  setEditLinkClicked } = useUserContext();
+  const { setEditLinkClicked, closeModal } = useUserContext();
   const handleCreateNew = () => {
     setModalType("createNew"); // Set modal type based on need
     setShowModal(true);
   };
 
+  useEffect(() => {
+    return () => {
+      setModalType(null);
+      setShowModal(false);
+      setEditLinkClicked(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (closeModal) {
+      setShowModal(false);
+      setModalType(null);
+    }
+  }, [closeModal]);
+
   const handleCloseModal = () => {
     setShowModal(false);
+    setShowConfirmationModal(false);
     setModalType(null); // Reset modal type on close
   };
 
-  const handleEditLinkClick =(rowId) => {
+  const handleDeleteAccount=()=>{
+    console.log("delete account");
+    setShowConfirmationModal(true);
+    setModalType("deleteAccount");
+  }
+  const handleEditLinkClick = (rowId) => {
     setModalType("edit");
     setShowModal(true);
     setEditLinkClicked(rowId);
@@ -75,7 +101,8 @@ const Dashboard = () => {
 
   // Wrap the Modal component with the HOC to inject dynamic content
   const CreateNewModalWindow = CreateNewModal(Modal);
-
+  const ConfirmationModalWindow = ConfirmationModal(Modal);
+  
 
   return (
     <section className={styles.Dashboard}>
@@ -176,17 +203,49 @@ const Dashboard = () => {
           </div>
         </nav>
         <div className={styles.mainContent}>
-          {state.linkActive && (<ResultTable handleEditLinkClick={handleEditLinkClick}/>)}
+          {state.linkActive && (
+            <ResultTable handleEditLinkClick={handleEditLinkClick} />
+          )}
+           {state.analyticsActive && (
+            <AnalyticsTable handleEditLinkClick={handleEditLinkClick} />
+          )}
+            {state.dashboardActive && (
+            <BarChart />
+          )}
+          {state.settingsActive && (
+            <ProfileData handleDeleteAccount={handleDeleteAccount} />
+          )}
         </div>
       </div>
       {showModal && (
-  <CreateNewModalWindow
-    show={showModal}
-    onClose={handleCloseModal}
-    title={modalType === "createNew" ? "New Link" : "Edit Link"}
-    modalType={modalType}
-  />
-)}
+        <CreateNewModalWindow
+          show={showModal}
+          onClose={handleCloseModal}
+          title={modalType === "createNew" ? "New Link" : "Edit Link"}
+          modalType={modalType}
+        />
+      )}
+          {showConfirmationModal && (
+        <ConfirmationModalWindow
+          show={showConfirmationModal}
+          onClose={handleCloseModal}
+          modalType={modalType}
+          headerStyle={{
+            backgroundColor: 'transparent',
+            padding: '20px',
+          }}
+          closeButtonStyle={{
+            color: 'black',
+          }}
+          windowStyle={{
+            backgroundColor: 'white',
+            width:'496px',
+            height:'222px',
+            borderRadius:'4px',
+            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
+          }}
+        />
+      )}
     </section>
   );
 };

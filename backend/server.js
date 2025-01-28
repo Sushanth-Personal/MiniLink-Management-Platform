@@ -34,10 +34,9 @@ app.use('/',UrlRoute);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("Successfully Connected with PORT: ", PORT);
 });
-
 
 process.on('SIGINT', () => {
   console.log("Server shutting down...");

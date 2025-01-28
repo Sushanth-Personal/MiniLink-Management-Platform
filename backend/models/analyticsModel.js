@@ -12,32 +12,24 @@ const analyticsSchema = new mongoose.Schema(
       ref: "Url",
       required: true,
     },
-    clicks: [
-      {
-        date: {
-          type: Date, // The specific date for tracking
-          required: true,
-        },
-        devices: {
-          desktop: {
-            type: Number,
-            required: false,
-            default: 0,
-          },
-          mobile: {
-            type: Number,
-            required: false,
-            default: 0,
-          },
-          tablet: {
-            type: Number,
-            required: false,
-            default: 0,
-          },
-        },
-      },
-    ],
+    url: {
+      type: String,
+      required: true,
+    },
+    shortUrl: {
+      type: String,
+      required: true,
+    },
+
+    date: {
+      type: Date, // The specific date for tracking
+      required: true,
+    },
+ 
+    ipAddress: { type: String, required: false }, // Store IP address
+    deviceType: { type: String, required: false }, // Store device type (mobile, desktop, tablet)
   },
+
   { timestamps: true }
 );
 

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import useFetch from "../../customHooks/useFetch"; // Import the custom hook
-import styles from "./ResultTable.module.css";
+import styles from "./AnalyticsTable.module.css";
 import { useUserContext } from "../../Contexts/UserContext";
-import {deleteUrl} from '../../api/api';
-const ResultTable = ({ handleEditLinkClick }) => {
+const AnalyticsTable = ({ handleEditLinkClick }) => {
   const { setPageUrlData, refreshData } = useUserContext();
   let baseURL;
 
@@ -28,7 +27,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
     loading,
     refetch,
   } = useFetch(
-    `${baseURL}/api/url?page=${currentPage}&limit=${pageSize}`, // Add pagination query params
+    `${baseURL}/api/analytics?page=${currentPage}&limit=${pageSize}`, // Add pagination query params
     { withCredentials: true }, // Pass additional Axios options here
     true // Automatically fetch data on mount
   );
@@ -39,15 +38,16 @@ const ResultTable = ({ handleEditLinkClick }) => {
   });
 
   useEffect(() => {
-    if (fetchedData) {
-      setData(fetchedData.urls); // Assuming the data is wrapped in `items`
-      setTotalPages(pagination.totalPages); // Assuming totalPages is part of the response
-      setPageUrlData(fetchedData.urls);
+    console.log("fetchedData", fetchedData, pagination);
+    if (fetchedData && pagination) {
+      setData(fetchedData.data);
+      setTotalPages(pagination.totalPages);
+      setPageUrlData(fetchedData.data);
     }
-  }, [fetchedData]);
+  }, [fetchedData, pagination]);
 
   useEffect(() => {
-    console.log(data);
+    console.log("data", data);
   }, [data]);
 
   useEffect(() => {
@@ -88,16 +88,6 @@ const ResultTable = ({ handleEditLinkClick }) => {
     setCurrentPage(page); // Update the current page when a page button is clicked
   };
 
-  const handleDeleteLinkClick = async (rowId) => {
-    try{
-      if(!rowId) return;
-      await deleteUrl(rowId);
-      refetch();
-    }catch(err){
-      console.log(err);
-    }
-  };
-
   return (
     <div className={styles.container}>
       {loading && <p>Loading data...</p>}
@@ -107,7 +97,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              Expiry Date
+              Timestamp
               <span className={styles.sortButtons}>
                 <button
                   onClick={() => handleSort("expiry", "asc")}
@@ -125,17 +115,22 @@ const ResultTable = ({ handleEditLinkClick }) => {
             </th>
             <th className={styles.headerCell}>Original Link</th>
             <th className={styles.headerCell}>Short Link</th>
-            <th className={styles.headerCell}>Remarks</th>
-            <th className={styles.headerCell}>Clicks</th>
-            <th className={styles.headerCell}>Status</th>
-            <th className={styles.headerCell}>Action</th>
+            <th className={styles.headerCell}>ip address</th>
+            <th className={styles.headerCell}>User Device</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={row._id} className={styles.row}>
               <td className={styles.cell}>
-                {new Date(row.expiry).toLocaleDateString()}
+                {new Date(row.date).toLocaleString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}
               </td>
               <td className={`${styles.cell} ${styles.urlCell}`}>
                 {row.url}
@@ -144,39 +139,10 @@ const ResultTable = ({ handleEditLinkClick }) => {
                 <div className={styles.shortUrl}>
                   {baseURL + "/" + row.shortUrl}
                 </div>
-                <img
-                  role="button"
-                  onClick={() =>
-                    handleCopyToClipboard(
-                      baseURL + "/" + row.shortUrl
-                    )
-                  }
-                  className={styles.copyIcon}
-                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737968945/Icons_2_iv0mah.png"
-                  alt="copy"
-                />
               </td>
-              <td className={styles.cell}>{row.remarks || "N/A"}</td>
-              <td className={styles.cell}>{row.clicks}</td>
-              <td className={styles.cell}>
-                {new Date(row.expiry) > new Date()
-                  ? "Active"
-                  : "Inactive"}
-              </td>
-              <td className={styles.cell}>
-                <button
-                  onClick={() => handleEditLinkClick(index)}
-                  className={styles.button}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteLinkClick(row._id)}
-                  className={styles.button}
-                >
-                  Delete
-                </button>
-              </td>
+
+              <td className={styles.cell}>{row.ipAddress}</td>
+              <td className={styles.cell}>{row.deviceType}</td>
             </tr>
           ))}
         </tbody>
@@ -219,4 +185,4 @@ const ResultTable = ({ handleEditLinkClick }) => {
   );
 };
 
-export default ResultTable;
+export default AnalyticsTable;
