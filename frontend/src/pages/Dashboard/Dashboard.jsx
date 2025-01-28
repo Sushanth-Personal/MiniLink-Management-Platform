@@ -230,7 +230,7 @@ const Dashboard = () => {
             </div>
           </div>
         </nav>
-        <div className={styles.mainContent}>
+        <div className={`${styles.mainContent} ${state.dashboardActive?styles.dashboardActive:""}`}>
           {state.linkActive && (
             <ResultTable
               handleDeleteLinkClick={handleDeleteLinkClick}

@@ -186,5 +186,9 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex:1;
+    background-color: #F8F8F8;
 }
 
+.dashboardActive{
+    background-color: white;
+}

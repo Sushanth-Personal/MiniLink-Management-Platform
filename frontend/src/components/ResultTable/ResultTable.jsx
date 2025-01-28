@@ -129,21 +129,25 @@ const ResultTable = ({ handleEditLinkClick }) => {
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              Date
-              <span className={styles.sortButtons}>
-                <button
-                  onClick={() => handleSort("expiry", "asc")}
-                  className={styles.sortButton}
-                >
-                  <ChevronUp />
-                </button>
-                <button
-                  onClick={() => handleSort("expiry", "desc")}
-                  className={styles.sortButton}
-                >
-                  <ChevronDown />
-                </button>
-              </span>
+              <div className={styles.dateGroup}>
+                <p>Date</p>
+                <span className={styles.sortButtons}>
+                  <img
+                    role="button"
+                    onClick={() => handleSort("expiry", "asc")}
+                    className={`${styles.sortButton} ${styles.asc}`}
+                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083451/Vector_9_fdkwkf.png"
+                    alt="asc"
+                  />
+                  <img
+                    role="button"
+                    onClick={() => handleSort("expiry", "desc")}
+                    className={`${styles.sortButton} ${styles.desc}`}
+                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083447/Vector_8_taduxn.png"
+                    alt="desc"
+                  />
+                </span>
+              </div>
             </th>
             <th className={styles.headerCell}>Original Link</th>
             <th className={styles.headerCell}>Short Link</th>
@@ -157,7 +161,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
           {data.map((row, index) => (
             <tr key={row._id} className={styles.row}>
               <td className={styles.cell}>
-                {new Date(row.createdAt).toLocaleDateString()}
+                {new Date(row.expiry).toLocaleDateString()}
               </td>
               <td className={`${styles.cell} ${styles.urlCell}`}>
                 {row.url}
@@ -182,24 +186,29 @@ const ResultTable = ({ handleEditLinkClick }) => {
               <td className={styles.cell}>{row.clicks}</td>
               <td className={styles.cell}>
                 {row.expiry === null ||
-                new Date(row.expiry) > new Date()
-                  ? "Active"
-                  : "Inactive"}
+                new Date(row.expiry) > new Date() ? (
+                  <p className={styles.active}>Active</p>
+                ) : (
+                  <p className={styles.inactive}>Inactive</p>
+                )}
               </td>
 
               <td className={styles.cell}>
-                <button
+                <img
+                  role="button"
                   onClick={() => handleEditLinkClick(index)}
-                  className={styles.button}
-                >
-                  Edit
-                </button>
-                <button
+                  className={styles.editIcon}
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738081242/Icons_3_zzabfr.png"
+                  alt="edit"
+                />
+
+                <img
+                  role="button"
+                  className={styles.deleteIcon}
                   onClick={() => handleDelete(row._id)}
-                  className={styles.button}
-                >
-                  Delete
-                </button>
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738081533/Icons_6_bmvvl6.png"
+                  alt="delete"
+                />
               </td>
             </tr>
           ))}
