@@ -14,7 +14,11 @@ const BarChart = () => {
   }
 
   // Fetch data
-  const { data: fetchedData, error, loading } = useFetch(
+  const {
+    data: fetchedData,
+    error,
+    loading,
+  } = useFetch(
     `${baseURL}/api/clicks`, // Fetch data from /api/clicks
     { withCredentials: true },
     true // Automatically fetch data on mount
@@ -26,15 +30,10 @@ const BarChart = () => {
     clicksPerDay: [],
   });
 
-  useEffect(() => {
-    console.log("clickData", clickData);
-  }, [clickData]);
   const expectedDevices = ["mobile", "desktop", "tablet"]; // List of expected device types
 
   useEffect(() => {
     if (fetchedData) {
-      console.log("Fetched data:", fetchedData);
-  
       // Ensure all expected devices are in the data, even if the count is 0
       const updatedClicksPerDevice = expectedDevices.map((device) => {
         const deviceData = fetchedData.clicksPerDevice.find(
@@ -46,24 +45,25 @@ const BarChart = () => {
           clicks: deviceData ? deviceData.clicks : 0, // Set 0 if the device is not in the data
         };
       });
-  
+
       // Process clicksPerDay to make it cumulative
       const cumulativeClicksPerDay = fetchedData.clicksPerDay.reduce(
         (acc, currentDay) => {
           // If there are no previous totals, start with 0
-          const previousTotal = acc.length > 0 ? acc[acc.length - 1].totalClicks : 0;
-  
+          const previousTotal =
+            acc.length > 0 ? acc[acc.length - 1].totalClicks : 0;
+
           // Add current day's clicks to the running total
           acc.push({
             day: currentDay.day,
             totalClicks: previousTotal + currentDay.totalClicks, // Cumulative total
           });
-  
+
           return acc;
         },
         [] // Start with an empty array
       );
-  
+
       setClickData({
         totalClicks: fetchedData.totalClicks,
         clicksPerDevice: updatedClicksPerDevice,
@@ -71,7 +71,6 @@ const BarChart = () => {
       });
     }
   }, [fetchedData]);
-  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className={styles.error}>Error: {error}</p>;
@@ -79,20 +78,22 @@ const BarChart = () => {
   return (
     <div className={styles.chartContainer}>
       {/* Total Clicks */}
-      <div className={styles.totalClicks}>Total Clicks: {clickData.totalClicks}</div>
+      <div className={styles.totalClicks}>
+        Total Clicks: {clickData.totalClicks}
+      </div>
 
       {/* Clicks Per Device */}
       <h3>Clicks Per Device</h3>
       {clickData.clicksPerDevice.map((device, index) => (
         <div key={index} className={styles.barWrapper}>
-          {console.log(device)}
           <span className={styles.label}>{device.deviceType}</span>
           <div
             className={styles.bar}
             style={{ width: `${device.clicks * 10}px` }} // Adjust width based on clicks
-          >
-          </div>
-          <span className={styles.clickCountRight}>{device.clicks}</span>
+          ></div>
+          <span className={styles.clickCountRight}>
+            {device.clicks}
+          </span>
         </div>
       ))}
 
@@ -105,7 +106,9 @@ const BarChart = () => {
             className={styles.bar}
             style={{ width: `${day.totalClicks * 10}px` }} // Adjust width dynamically
           >
-            <span className={styles.clickCountRight}>{day.totalClicks}</span>
+            <span className={styles.clickCountRight}>
+              {day.totalClicks}
+            </span>
           </div>
         </div>
       ))}

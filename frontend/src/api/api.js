@@ -106,9 +106,24 @@ export const registerUser = async (username, email,contact,password) => {
 export const postUrl = async (url, remarks, expiry) => {
   try {
     console.log(url, remarks, expiry);
-    const response = await api.post("/api/url", { url, remarks, expiry }, {
-      withCredentials: true,
-    });
+    let response;
+    if (expiry === "Select Expiry Date and Time") {
+      response = await api.post(
+        "/api/url",
+        { url, remarks },
+        {
+          withCredentials: true,
+        }
+      );
+    } else {
+      response = await api.post(
+        "/api/url",
+        { url, remarks, expiry },
+        {
+          withCredentials: true,
+        }
+      );
+    }
     return response.data; // Return the data directly
   } catch (error) {
     console.error("Error posting URL:", error.response.data.message);
@@ -120,9 +135,24 @@ export const postUrl = async (url, remarks, expiry) => {
 export const updateUrl = async (url, remarks, expiry) => {
   try {
     console.log(url, remarks, expiry);
-    const response = await api.put("/api/url", { url, remarks, expiry }, {
-      withCredentials: true,
-    });
+    let response;
+    if (expiry === "Select Expiry Date and Time") {
+      response = await api.put(
+        "/api/url",
+        { url, remarks },
+        {
+          withCredentials: true,
+        }
+      );
+    } else {
+      response = await api.put(
+        "/api/url",
+        { url, remarks, expiry },
+        {
+          withCredentials: true,
+        }
+      );
+    }
     return response.data; // Return the data directly
   } catch (error) {
     console.error("Error posting URL:", error.response.data.message);

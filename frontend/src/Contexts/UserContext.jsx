@@ -15,6 +15,11 @@ export const UserProvider = ({ children }) => {
   const [closeModal, setCloseModal] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
   const [deleteAccount, setDeleteAccount] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmDeleteUrl, setConfirmDeleteUrl] = useState(false); 
+  const [modalType, setModalType] = useState(null);
+  const [expirySwitch, setExpirySwitch] = useState(true);
+  const [clearModal, setClearModal] = useState(false);
   const value = useMemo(
     () => ({
       userId,
@@ -32,7 +37,17 @@ export const UserProvider = ({ children }) => {
       refreshData,
       setRefreshData,
       deleteAccount,
-      setDeleteAccount
+      setDeleteAccount,
+      showConfirmationModal,
+      setShowConfirmationModal,
+      confirmDeleteUrl,
+      setConfirmDeleteUrl,
+      modalType,
+      setModalType,
+      expirySwitch,
+      setExpirySwitch,
+      clearModal,
+      setClearModal
     }),
     [
       userId,
@@ -50,7 +65,17 @@ export const UserProvider = ({ children }) => {
       refreshData,
       setRefreshData,
       deleteAccount,
-      setDeleteAccount
+      setDeleteAccount,
+      showConfirmationModal,
+      setShowConfirmationModal,
+      confirmDeleteUrl,
+      setConfirmDeleteUrl,
+      modalType,
+      setModalType,
+      expirySwitch,
+      setExpirySwitch,
+      clearModal,
+      setClearModal
     ]
   );
 

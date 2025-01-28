@@ -13,13 +13,19 @@ const CreateNewModal = (WrappedComponent) => {
     );
     const [remarks, setRemarks] = useState("");
     const [url, setUrl] = useState("");
-    const [expirySwitch, setExpirySwitch] = useState(true);
-    const { setPageUrlData,pageUrlData, editLinkClicked, setCloseModal,setRefreshData} =
-      useUserContext();
+
+    const {
+      pageUrlData,
+      editLinkClicked,
+      setCloseModal,
+      setRefreshData,
+      setExpirySwitch,
+      expirySwitch,
+    } = useUserContext();
     const [data, setData] = useState(pageUrlData[editLinkClicked]);
 
     useEffect(() => {
-      if (data && data.expiry) {
+      if (data && data.expiry && modalType === "edit") {
         // Format the existing expiry date
         const formattedExpiry = format(
           parseISO(data.expiry),
@@ -28,26 +34,31 @@ const CreateNewModal = (WrappedComponent) => {
         setExpiry(formattedExpiry);
         console.log("Formatted preloaded expiry:", formattedExpiry);
       }
-      if (data) {
+      if (data && modalType === "edit") {
         setUrl(data.url);
         setRemarks(data.remarks);
       }
-      return () => {
-        console.log("Nodal cleanup");
-        // setData(null);
-        setPageUrlData([]);
-        // setEditLinkClicked(null);
-      };
+     
     }, [data]);
+
+    useEffect(() => {
+      if(!expirySwitch){
+        setExpiry("Select Expiry Date and Time");
+      }
+    },[expirySwitch])
 
     const handleSave = async () => {
       try {
         console.log(url, remarks, expiry);
+      
         const response = await updateUrl(url, remarks, expiry);
         console.log(response.data);
         setData(response.data);
         setCloseModal(true);
         setRefreshData(true);
+        setRemarks("");
+        setExpiry("Select Expiry Date and Time");
+        setUrl("");
       } catch (error) {
         console.log(error);
       }
@@ -62,6 +73,10 @@ const CreateNewModal = (WrappedComponent) => {
       setExpiry(formattedDate); // Update expiry with formatted date
       console.log("Selected date (formatted):", formattedDate);
     };
+
+    useEffect(() => {
+      console.log("expirySwitch:", expirySwitch);
+    }, [expirySwitch]);
 
     const handleCreateNew = async () => {
       if (!url.trim()) {

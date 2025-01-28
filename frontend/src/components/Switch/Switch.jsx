@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./switch.module.css"; // Import the CSS module
 
-const Switch = ({ initialChecked = false, onChange }) => {
+const Switch = ({ initialChecked = true, onChange }) => {
   const [checked, setChecked] = useState(initialChecked);
 
   const handleToggle = () => {

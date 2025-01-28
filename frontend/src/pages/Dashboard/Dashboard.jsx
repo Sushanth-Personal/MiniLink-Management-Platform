@@ -7,7 +7,7 @@ import CreateNewModal from "../../components/CreateNewModal/CreateNewModal";
 import ResultTable from "../../components/ResultTable/ResultTable";
 import BarChart from "../../components/BarChart/BarChart";
 import ProfileData from "../../components/ProfileData/ProfileData";
-import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";  
+import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";
 import { useUserContext } from "../../Contexts/UserContext";
 // Initial state for the reducer
 const initialState = {
@@ -59,21 +59,24 @@ const Dashboard = () => {
   // Use the reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [modalType, setModalType] = useState(null);
-  const { setEditLinkClicked, closeModal } = useUserContext();
+
+  const {
+    setEditLinkClicked,
+    closeModal,
+    showConfirmationModal,
+    setShowConfirmationModal,
+    modalType,
+    setModalType,
+    userData,
+  } = useUserContext();
   const handleCreateNew = () => {
     setModalType("createNew"); // Set modal type based on need
     setShowModal(true);
   };
 
   useEffect(() => {
-    return () => {
-      setModalType(null);
-      setShowModal(false);
-      setEditLinkClicked(null);
-    };
-  }, []);
+    console.log("userData", userData);
+  }, [userData]);
 
   useEffect(() => {
     if (closeModal) {
@@ -82,27 +85,42 @@ const Dashboard = () => {
     }
   }, [closeModal]);
 
+  const getShortForm = (username) => {
+    const words = username.trim().split(" "); // Split the username into words
+    if (words.length === 1) {
+      // If only one word, return the first letter
+      return words[0][0].toUpperCase();
+    } else if (words.length >= 2) {
+      // If two or more words, return the first letter of the first two words
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+  };
   const handleCloseModal = () => {
     setShowModal(false);
     setShowConfirmationModal(false);
     setModalType(null); // Reset modal type on close
   };
 
-  const handleDeleteAccount=()=>{
+  const handleDeleteAccount = () => {
     console.log("delete account");
     setShowConfirmationModal(true);
     setModalType("deleteAccount");
-  }
+  };
   const handleEditLinkClick = (rowId) => {
     setModalType("edit");
     setShowModal(true);
     setEditLinkClicked(rowId);
   };
 
+  const handleDeleteLinkClick = () => {
+    console.log("delete link");
+    setModalType("deleteUrl");
+    setShowConfirmationModal(true);
+  };
+
   // Wrap the Modal component with the HOC to inject dynamic content
   const CreateNewModalWindow = CreateNewModal(Modal);
   const ConfirmationModalWindow = ConfirmationModal(Modal);
-  
 
   return (
     <section className={styles.Dashboard}>
@@ -173,8 +191,14 @@ const Dashboard = () => {
               alt="goodmorning"
             />
             <p>
-              Good morning, Sujith
-              <span>Tue, Jan 25</span>
+              Good morning, {userData.username}
+              <span>
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
             </p>
           </div>
 
@@ -199,19 +223,26 @@ const Dashboard = () => {
             </div>
           </div>
           <div className={styles.rightNav}>
-            <div className={styles.shortForm}>SU</div>
+            <div className={styles.shortForm}>
+              {userData && userData.username
+                ? getShortForm(userData.username)
+                : "SU"}
+            </div>
           </div>
         </nav>
         <div className={styles.mainContent}>
           {state.linkActive && (
-            <ResultTable handleEditLinkClick={handleEditLinkClick} />
+            <ResultTable
+              handleDeleteLinkClick={handleDeleteLinkClick}
+              handleEditLinkClick={handleEditLinkClick}
+            />
           )}
-           {state.analyticsActive && (
-            <AnalyticsTable handleEditLinkClick={handleEditLinkClick} />
+          {state.analyticsActive && (
+            <AnalyticsTable
+              handleEditLinkClick={handleEditLinkClick}
+            />
           )}
-            {state.dashboardActive && (
-            <BarChart />
-          )}
+          {state.dashboardActive && <BarChart />}
           {state.settingsActive && (
             <ProfileData handleDeleteAccount={handleDeleteAccount} />
           )}
@@ -225,24 +256,24 @@ const Dashboard = () => {
           modalType={modalType}
         />
       )}
-          {showConfirmationModal && (
+      {showConfirmationModal && (
         <ConfirmationModalWindow
           show={showConfirmationModal}
           onClose={handleCloseModal}
           modalType={modalType}
           headerStyle={{
-            backgroundColor: 'transparent',
-            padding: '20px',
+            backgroundColor: "transparent",
+            padding: "20px",
           }}
           closeButtonStyle={{
-            color: 'black',
+            color: "black",
           }}
           windowStyle={{
-            backgroundColor: 'white',
-            width:'496px',
-            height:'222px',
-            borderRadius:'4px',
-            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
+            backgroundColor: "white",
+            width: "496px",
+            height: "222px",
+            borderRadius: "4px",
+            boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
           }}
         />
       )}

@@ -113,7 +113,7 @@ const deleteUser = async (req, res) => {
 }
 const postUrl = async (req, res) => {
   const { url, expiry, remarks } = req.body;
-
+  console.log("expiry date", expiry);
   // Get userId from the middleware-augmented req object
   const userId = req.user.id;
 
@@ -133,12 +133,23 @@ const postUrl = async (req, res) => {
       Buffer.from(hash, "hex").readUIntBE(0, 6)
     ); // Only take part of the hash for a shorter URL
 
+    // Validate and handle expiry
+    let expiryDate = null;
+    if (expiry) {
+      const parsedExpiry = new Date(expiry);
+      if (!isNaN(parsedExpiry)) {
+        expiryDate = parsedExpiry;
+      } else {
+        return res.status(400).json({ message: "Invalid expiry date format." });
+      }
+    }
+
     // Create a new Url document
     const newUrl = new Url({
       userId, // Use userId from the token
       url,
       shortUrl, // Short URL using Base62 encoding
-      expiry: expiry ? new Date(expiry) : null,
+      expiry: expiryDate,
       remarks: remarks || "",
     });
 
@@ -171,21 +182,57 @@ const updateUrl = async (req, res) => {
   try {
     const urlReq = await Url.findOne({ url });
 
-    urlReq.url = url;
-    urlReq.expiry = expiry ? new Date(expiry) : null;
-    urlReq.remarks = remarks || "";
-    // Save to the database
-    const savedUrl = await urlReq.save();
+    if (!urlReq) {
+      return res.status(404).json({ message: "URL not found." });
+    }
 
-    res.status(201).json({
-      message: "Shortened URL created successfully.",
+    // Check if the URL is being updated
+    if (urlReq.url !== url) {
+      // Generate a new SHA-256 hash of the updated URL
+      const hash = crypto
+        .createHash("sha256")
+        .update(url + Date.now().toString())
+        .digest("hex");
+
+      // Convert the hash to a Base62 string (to shorten the URL)
+      const shortUrl = base62.encode(
+        Buffer.from(hash, "hex").readUIntBE(0, 6)
+      ); // Only take part of the hash for a shorter URL
+      
+      // Update the shortUrl in the database
+      urlReq.shortUrl = shortUrl;
+    }
+
+    // Update the other fields
+    urlReq.url = url;
+    urlReq.remarks = remarks || "";
+
+    // Remove or update the expiry field
+    if (expiry) {
+      const parsedExpiry = new Date(expiry);
+      if (!isNaN(parsedExpiry)) {
+        urlReq.expiry = parsedExpiry;
+      } else {
+        return res.status(400).json({ message: "Invalid expiry date format." });
+      }
+    } else {
+      // Remove the expiry field if not sent
+      urlReq.expiry = null;
+    }
+
+
+    // Save the updated document to the database
+    const savedUrl = await urlReq.save();
+    console.log("savedUrl", savedUrl);
+    res.status(200).json({
+      message: "Shortened URL updated successfully.",
       shortUrl: savedUrl.shortUrl,
       data: savedUrl,
     });
   } catch (error) {
-    console.error("Error creating shortened URL:", error);
+    console.error("Error updating shortened URL:", error);
     res.status(500).json({
-      message: "Server error. Unable to create shortened URL.",
+      message: "Server error. Unable to update shortened URL.",
     });
   }
 };

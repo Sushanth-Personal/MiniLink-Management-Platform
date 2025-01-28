@@ -22,11 +22,10 @@ if (import.meta.env.VITE_API_STATUS === "PRODUCTION") {
     const authenticateUser = async () => {
       try {
         const userResponse = await axios.get(`${baseURL}/api/user`, { withCredentials: true });
-        console.log("userResponse", userResponse);
         if (userResponse.data) {
           setUserId(userResponse.data._id); // Set userId in context
           setUserData({
-            ...userResponse.data.user,
+            ...userResponse.data,
             userId: userResponse.data._id,
           }); // Set full userData in context
           setIsLoggedIn(true);

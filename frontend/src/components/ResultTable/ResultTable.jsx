@@ -3,9 +3,16 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import useFetch from "../../customHooks/useFetch"; // Import the custom hook
 import styles from "./ResultTable.module.css";
 import { useUserContext } from "../../Contexts/UserContext";
-import {deleteUrl} from '../../api/api';
+import { deleteUrl } from "../../api/api";
 const ResultTable = ({ handleEditLinkClick }) => {
-  const { setPageUrlData, refreshData } = useUserContext();
+  const {
+    setPageUrlData,
+    refreshData,
+    setShowConfirmationModal,
+    confirmDeleteUrl,
+    setConfirmDeleteUrl,
+    setModalType,
+  } = useUserContext();
   let baseURL;
 
   if (import.meta.env.VITE_API_STATUS === "DEVELOPMENT") {
@@ -17,6 +24,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
   }
 
   const [data, setData] = useState([]);
+  const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
   const pageSize = 10; // Set the number of items per page
@@ -88,12 +96,26 @@ const ResultTable = ({ handleEditLinkClick }) => {
     setCurrentPage(page); // Update the current page when a page button is clicked
   };
 
-  const handleDeleteLinkClick = async (rowId) => {
-    try{
-      if(!rowId) return;
+  const handleDelete = (rowId) => {
+    setDeleteId(rowId);
+    setModalType("deleteUrl");
+    setShowConfirmationModal(true);
+  };
+
+  useEffect(() => {
+    if (confirmDeleteUrl) {
+      handleDeleteLink(deleteId);
+    }
+  }, [confirmDeleteUrl]);
+
+  const handleDeleteLink = async (rowId) => {
+    try {
+      if (!rowId) return;
       await deleteUrl(rowId);
+      setConfirmDeleteUrl(false);
+      setShowConfirmationModal(false);
       refetch();
-    }catch(err){
+    } catch (err) {
       console.log(err);
     }
   };
@@ -107,7 +129,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              Expiry Date
+              Date
               <span className={styles.sortButtons}>
                 <button
                   onClick={() => handleSort("expiry", "asc")}
@@ -135,7 +157,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
           {data.map((row, index) => (
             <tr key={row._id} className={styles.row}>
               <td className={styles.cell}>
-                {new Date(row.expiry).toLocaleDateString()}
+                {new Date(row.createdAt).toLocaleDateString()}
               </td>
               <td className={`${styles.cell} ${styles.urlCell}`}>
                 {row.url}
@@ -159,10 +181,12 @@ const ResultTable = ({ handleEditLinkClick }) => {
               <td className={styles.cell}>{row.remarks || "N/A"}</td>
               <td className={styles.cell}>{row.clicks}</td>
               <td className={styles.cell}>
-                {new Date(row.expiry) > new Date()
+                {row.expiry === null ||
+                new Date(row.expiry) > new Date()
                   ? "Active"
                   : "Inactive"}
               </td>
+
               <td className={styles.cell}>
                 <button
                   onClick={() => handleEditLinkClick(index)}
@@ -171,7 +195,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDeleteLinkClick(row._id)}
+                  onClick={() => handleDelete(row._id)}
                   className={styles.button}
                 >
                   Delete

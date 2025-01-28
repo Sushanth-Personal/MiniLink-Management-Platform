@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-
 // Define the user authentication schema
 const urlSchema = new mongoose.Schema(
   {
