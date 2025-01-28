@@ -27,7 +27,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
-  const pageSize = 10; // Set the number of items per page
+  const pageSize = 2; // Set the number of items per page
 
   const {
     data: fetchedData,
@@ -48,9 +48,9 @@ const ResultTable = ({ handleEditLinkClick }) => {
 
   useEffect(() => {
     if (fetchedData) {
-      setData(fetchedData.urls); // Assuming the data is wrapped in `items`
+      setData(fetchedData.data); // Assuming the data is wrapped in `items`
       setTotalPages(pagination.totalPages); // Assuming totalPages is part of the response
-      setPageUrlData(fetchedData.urls);
+      setPageUrlData(fetchedData.data);
     }
   }, [fetchedData]);
 
@@ -63,6 +63,11 @@ const ResultTable = ({ handleEditLinkClick }) => {
       refetch();
     }
   }, [refreshData]);
+
+
+  useEffect(() => {
+    console.log("Total pages:", totalPages);
+  },[totalPages])
 
   const handleSort = (key, direction) => {
     const sortedData = [...data].sort((a, b) => {
@@ -161,7 +166,14 @@ const ResultTable = ({ handleEditLinkClick }) => {
           {data.map((row, index) => (
             <tr key={row._id} className={styles.row}>
               <td className={styles.cell}>
-                {new Date(row.expiry).toLocaleDateString()}
+                {new Date(row.expiry).toLocaleString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}
               </td>
               <td className={`${styles.cell} ${styles.urlCell}`}>
                 {row.url}
@@ -223,7 +235,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          &#8592; {/* Left Arrow */}
+          <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738087314/Vector_1_oimwdr.svg" alt="leftarrow" />
         </button>
 
         {/* Numeric Page Buttons */}
@@ -245,7 +257,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          &#8594; {/* Right Arrow */}
+         <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738087377/Vector_2_nysle4.svg" alt="rightarrow" />
         </button>
       </div>
     </div>

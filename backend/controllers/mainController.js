@@ -315,7 +315,7 @@ const getUrlsByUser = async (req, res) => {
     // Get the page number and limit from the query parameters (default to page 1 and limit 5)
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    console.log("limit", limit);
+
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
 
@@ -330,19 +330,23 @@ const getUrlsByUser = async (req, res) => {
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(totalUrls / limit);
-    console.log(urls, page, totalPages, totalUrls);
+
     // Respond with the paginated URLs and pagination info
     res.status(200).json({
-      urls,
-      page,
-      totalPages,
-      totalUrls,
+      pagination: {
+        page,
+        totalPages,
+        totalUrls,
+        limit,
+      },
+      data: urls,
     });
   } catch (error) {
     console.error("Error fetching URLs:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 const getAnalytics = async (req, res) => {
   try {

@@ -18,7 +18,7 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
-  const pageSize = 10; // Set the number of items per page
+  const pageSize = 4; // Set the number of items per page
 
   const {
     data: fetchedData,
@@ -58,10 +58,10 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
 
   const handleSort = (key, direction) => {
     const sortedData = [...data].sort((a, b) => {
-      if (key === "expiry") {
+      if (key === "date") {
         return direction === "asc"
-          ? new Date(a.expiry) - new Date(b.expiry)
-          : new Date(b.expiry) - new Date(a.expiry);
+          ? new Date(a.date) - new Date(b.date)
+          : new Date(b.date) - new Date(a.date);
       } else {
         return direction === "asc"
           ? a[key]?.localeCompare(b[key])
@@ -97,21 +97,25 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              Timestamp
-              <span className={styles.sortButtons}>
-                <button
-                  onClick={() => handleSort("expiry", "asc")}
-                  className={styles.sortButton}
-                >
-                  <ChevronUp />
-                </button>
-                <button
-                  onClick={() => handleSort("expiry", "desc")}
-                  className={styles.sortButton}
-                >
-                  <ChevronDown />
-                </button>
-              </span>
+              <div className={styles.sortGroup}>
+                <p>Timestamp</p>
+                <span className={styles.sortButtons}>
+                  <img
+                    role="button"
+                    onClick={() => handleSort("date", "asc")}
+                    className={`${styles.sortButton} ${styles.asc}`}
+                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083451/Vector_9_fdkwkf.png"
+                    alt="asc"
+                  />
+                  <img
+                    role="button"
+                    onClick={() => handleSort("date", "desc")}
+                    className={`${styles.sortButton} ${styles.desc}`}
+                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083447/Vector_8_taduxn.png"
+                    alt="desc"
+                  />
+                </span>
+              </div>
             </th>
             <th className={styles.headerCell}>Original Link</th>
             <th className={styles.headerCell}>Short Link</th>
@@ -149,38 +153,38 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
       </table>
 
       {/* Pagination Buttons */}
-      <div className={styles.pagination}>
-        {/* Left Arrow Button */}
-        <button
-          className={styles.paginationButton}
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          &#8592; {/* Left Arrow */}
-        </button>
-
-        {/* Numeric Page Buttons */}
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            className={`${styles.paginationButton} ${
-              currentPage === index + 1 ? styles.active : ""
-            }`}
-            onClick={() => handlePageChange(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
-
-        {/* Right Arrow Button */}
-        <button
-          className={styles.paginationButton}
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          &#8594; {/* Right Arrow */}
-        </button>
-      </div>
+         <div className={styles.pagination}>
+              {/* Left Arrow Button */}
+              <button
+                className={styles.paginationButton}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738087314/Vector_1_oimwdr.svg" alt="leftarrow" />
+              </button>
+      
+              {/* Numeric Page Buttons */}
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  className={`${styles.paginationButton} ${
+                    currentPage === index + 1 ? styles.active : ""
+                  }`}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+      
+              {/* Right Arrow Button */}
+              <button
+                className={styles.paginationButton}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+               <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738087377/Vector_2_nysle4.svg" alt="rightarrow" />
+              </button>
+            </div>
     </div>
   );
 };

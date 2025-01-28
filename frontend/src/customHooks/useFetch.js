@@ -37,9 +37,9 @@ const useFetch = (url, options = {}, fetchOnMount = true, page = null, limit = n
       setData(response.data); // Set response data
       if (response.data.pagination) {
         setPagination({
-          currentPage: response.data.pagination.currentPage,
+          currentPage: response.data.pagination.page,
           totalPages: response.data.pagination.totalPages,
-          totalItems: response.data.pagination.totalItems,
+          totalItems: response.data.pagination.totalUrls,
         });
       }
       setError(null);
