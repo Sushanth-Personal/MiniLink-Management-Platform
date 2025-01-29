@@ -86,7 +86,7 @@ const ProfileData = ({ handleDeleteAccount }) => {
     <div className={styles.profileData}>
       {loading && <p>Loading data...</p>}
       {error && <p className={styles.error}>Error: {error}</p>}
-      <h2 className={styles.heading}>Profile Information</h2>
+    
       <form className={styles.profileForm}>
         <div className={styles.formGroup}>
           <label htmlFor="name" className={styles.label}>
