@@ -21,6 +21,7 @@
   justify-content: center;
   gap: 16px;
   width: 100%;
+  height: 55vh;
 }
 
 .clicksPerDay {
@@ -30,7 +31,7 @@
   padding: 16px;
   border: 1px solid #ececf2;
   width:50%;
-  height:463px;
+  height:100%;
 
 }
 
@@ -48,15 +49,17 @@
   padding: 16px;
   border: 1px solid #ececf2;
   width:50%;
-  height: 463px;
+  height: 100%;
 }
 
 .clicksPerDevice h3{
   color:#1B48DA;
+  margin-bottom: 39px;
 }
 
 .clicksPerDay h3{
   color:#1B48DA;
+  margin-bottom: 39px;
 }
 .clickCountRight {
   color: #000;
@@ -80,12 +83,15 @@
   flex-direction: column;
   justify-content: flex-start;
   gap:7px;
+  
 }
 
 .clicksColumn{
   display: flex;
   flex-direction: column;
   gap:4px;
+  font-size: 1.6rem;
+  font-weight: bold;
 }
 .label {
   font-size: 1.6rem;
@@ -109,4 +115,44 @@
 .error {
   color: red;
   font-weight: bold;
+}
+
+
+@media screen and (max-width: 600px) {
+  
+  .displaySection{
+    flex-direction: column;
+  }
+
+  .clicksPerDay{
+    width:100%;
+  }
+  .clicksPerDevice{
+    width:100%;
+  }
+
+  .clicksColumn{
+    margin-left: 100px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .clicksColumn{
+    margin-left: 10px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .label{
+    font-size: 1.2rem;
+    min-width:80px;
+  }
+
+  .clicksColumn{
+    font-size: 1.2rem;
+  }
+
+  .chartContainer{
+    padding:0;
+  }
 }

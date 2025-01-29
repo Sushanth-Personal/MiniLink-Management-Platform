@@ -7,6 +7,7 @@
     gap:12px;
     margin-bottom: 24px;
     padding:0 21px;
+    font-family: 'Manrope', sans-serif;
 }
 
 .destinationUrlContainer span{
@@ -153,4 +154,33 @@
 
 .clearButton{
     border:none;
+}
+
+@media screen and (max-width: 600px) {
+    .destinationUrlContainer span{
+        font-size: 1.2rem;
+    }
+
+    .destinationUrlContainer input {
+        transform-origin: left center;
+        height:25px;
+        font-size: 1.2rem;
+    }
+    
+    .createButton{
+        font-size: 1.2rem;
+        transform: origin right center;
+        transform: scale(0.8);
+    }
+
+    .actionBar{
+        padding: 0 10px 0 15px;
+        height: 50px;
+    }
+
+    .clearButton{
+        font-size: 1.2rem;
+    }
+
+ 
 }

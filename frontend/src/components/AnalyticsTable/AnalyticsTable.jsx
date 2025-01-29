@@ -92,64 +92,65 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
       {loading && <p>Loading data...</p>}
       {error && <p className={styles.error}>Error: {error}</p>}
 
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.headerRow}>
-            <th className={styles.headerCell}>
-              <div className={styles.sortGroup}>
-                <p>Timestamp</p>
-                <span className={styles.sortButtons}>
-                  <img
-                    role="button"
-                    onClick={() => handleSort("date", "asc")}
-                    className={`${styles.sortButton} ${styles.asc}`}
-                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083451/Vector_9_fdkwkf.png"
-                    alt="asc"
-                  />
-                  <img
-                    role="button"
-                    onClick={() => handleSort("date", "desc")}
-                    className={`${styles.sortButton} ${styles.desc}`}
-                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083447/Vector_8_taduxn.png"
-                    alt="desc"
-                  />
-                </span>
-              </div>
-            </th>
-            <th className={styles.headerCell}>Original Link</th>
-            <th className={styles.headerCell}>Short Link</th>
-            <th className={styles.headerCell}>ip address</th>
-            <th className={styles.headerCell}>User Device</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, index) => (
-            <tr key={row._id} className={styles.row}>
-              <td className={styles.cell}>
-                {new Date(row.date).toLocaleString("en-US", {
-                  month: "short",
-                  day: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
-              </td>
-              <td className={`${styles.cell} ${styles.urlCell}`}>
-                {row.url}
-              </td>
-              <td className={`${styles.cell} ${styles.shortUrlCell}`}>
-                <div className={styles.shortUrl}>
-                  {baseURL + "/" + row.shortUrl}
+      <div className = {styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.headerRow}>
+              <th className={styles.headerCell}>
+                <div className={styles.sortGroup}>
+                  <p>Timestamp</p>
+                  <span className={styles.sortButtons}>
+                    <img
+                      role="button"
+                      onClick={() => handleSort("date", "asc")}
+                      className={`${styles.sortButton} ${styles.asc}`}
+                      src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083451/Vector_9_fdkwkf.png"
+                      alt="asc"
+                    />
+                    <img
+                      role="button"
+                      onClick={() => handleSort("date", "desc")}
+                      className={`${styles.sortButton} ${styles.desc}`}
+                      src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738083447/Vector_8_taduxn.png"
+                      alt="desc"
+                    />
+                  </span>
                 </div>
-              </td>
-
-              <td className={styles.cell}>{row.ipAddress}</td>
-              <td className={styles.cell}>{row.platform}</td>
+              </th>
+              <th className={styles.headerCell}>Original Link</th>
+              <th className={styles.headerCell}>Short Link</th>
+              <th className={styles.headerCell}>ip address</th>
+              <th className={styles.headerCell}>User Device</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row, index) => (
+              <tr key={row._id} className={styles.row}>
+                <td className={styles.cell}>
+                  {new Date(row.date).toLocaleString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </td>
+                <td className={`${styles.cell} ${styles.urlCell}`}>
+                  {row.url}
+                </td>
+                <td className={`${styles.cell} ${styles.shortUrlCell}`}>
+                  <div className={styles.shortUrl}>
+                    {baseURL + "/" + row.shortUrl}
+                  </div>
+                </td>
+                <td className={styles.cell}>{row.ipAddress}</td>
+                <td className={styles.cell}>{row.platform}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination Buttons */}
          <div className={styles.pagination}>

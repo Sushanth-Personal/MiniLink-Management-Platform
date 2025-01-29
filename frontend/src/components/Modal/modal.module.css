@@ -46,14 +46,15 @@
   .closeButton {
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 2rem;
     cursor: pointer; /* Pointer cursor for button */
     color: white; /* Gray color for close button */
     margin-right: 20px;
   }
   
   .closeButton:hover {
-    color: #333; /* Darker color on hover */
+    transform: scale(1.1);
+    filter:brightness(1.2);
   }
   
   /* Modal Body - for the main content */
@@ -82,3 +83,17 @@
     background-color: #0056b3; /* Darker blue on hover */
   }
   
+  @media screen and (max-width: 600px) {
+    .modalContent{
+      width: 80%;
+      height: 80%;
+    }
+
+    .modalHeader h2{
+      font-size: 1.4rem;
+    }
+
+    .closeButton{
+      font-size: 1.4rem;
+    }
+  }

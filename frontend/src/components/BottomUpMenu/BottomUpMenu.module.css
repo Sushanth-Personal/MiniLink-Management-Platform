@@ -1,0 +1,49 @@
+/* Base styling for the button */
+.menuToggleButton {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Styling for the menu container */
+.menuContainer {
+  height: 100vh;
+  position: fixed;
+  bottom: -100%; /* Initially hidden, at the bottom of the screen */
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  transition: bottom 0.3s ease-out;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* When the menu is open, move it up to cover 80% of the screen */
+.menuContainer.open {
+  bottom: -20%; /* Will cover 80% of the screen */
+}
+
+/* Styling for the list items */
+.menuOptions {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+}
+
+.menuOption {
+  padding: 15px;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+}
+
+.menuOption:hover {
+  background-color: #555;
+}

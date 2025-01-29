@@ -10,6 +10,7 @@ import ProfileData from "../../components/ProfileData/ProfileData";
 import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";
 import { useUserContext } from "../../Contexts/UserContext";
 import useScreenSize from "../../customHooks/useScreenSize";
+import BottomUpMenu from "../../components/BottomUpMenu/BottomUpMenu";
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -61,7 +62,7 @@ const Dashboard = () => {
   // Use the reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {
     setEditLinkClicked,
     closeModal,
@@ -86,6 +87,13 @@ const Dashboard = () => {
       setModalType(null);
     }
   }, [closeModal]);
+
+
+
+  const toggleMenu = () => {
+    setIsMenuOpen(prevState => !prevState);
+    console.log(isMenuOpen);
+  };
 
   const getShortForm = (username) => {
     const words = username.trim().split(" "); // Split the username into words
@@ -199,7 +207,8 @@ const Dashboard = () => {
           <div className={styles.leftNav}>
             {tabletSize && (
               <img
-                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624351/Logo_Wrapper_uuv2gj.png"
+                className = {styles.logo}
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738152167/download_1_dbcvdx.svg"
                 alt="logo"
               />
             )}
@@ -224,7 +233,8 @@ const Dashboard = () => {
           </div>
 
           <div className={styles.midNav}>
-            <button
+           
+           {!mobileHorizontalSize && (<button
               onClick={handleCreateNew}
               className={styles.createNew}
             >
@@ -233,7 +243,8 @@ const Dashboard = () => {
                 alt="add"
               />
               Create new
-            </button>
+            </button>)}
+            
             <div className={styles.searchContainer}>
               <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634977/Frame_2_cs2ror.png" />
               <input
@@ -244,14 +255,17 @@ const Dashboard = () => {
             </div>
           </div>
           <div className={styles.rightNav}>
-            <div className={styles.shortForm}>
+            <div 
+            role="button"
+            onClick={toggleMenu}
+            className={styles.shortForm}>
               {userData && userData.username
                 ? getShortForm(userData.username)
                 : "SU"}
             </div>
           </div>
         </nav>
-        {console.log(tabletSize)}
+{/*        
         {tabletSize && (
           <div className={styles.menuBar}>
             <div className={styles.menuTray}>
@@ -330,7 +344,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         <div
           className={`${styles.mainContent} ${
             state.dashboardActive || state.settingsActive
@@ -338,12 +352,12 @@ const Dashboard = () => {
               : ""
           }`}
         >
-          {state.linkActive && (
+          {/* {state.linkActive && (
             <ResultTable
               handleDeleteLinkClick={handleDeleteLinkClick}
               handleEditLinkClick={handleEditLinkClick}
             />
-          )}
+          )} */}
           {state.analyticsActive && (
             <AnalyticsTable
               handleEditLinkClick={handleEditLinkClick}
@@ -384,6 +398,16 @@ const Dashboard = () => {
           }}
         />
       )}
+          {mobileHorizontalSize && (<button
+              onClick={handleCreateNew}
+              className={styles.createNewMobile}
+            >
+              <img
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634367/Frame_1_rq3xx8.png"
+                alt="add"
+              />
+            </button>)}
+            <BottomUpMenu options={['Dashboard','Links', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen}  />
     </section>
   );
 };
