@@ -239,6 +239,8 @@ const updateUrl = async (req, res) => {
 
 
 
+const UAParser = require("ua-parser-js");
+
 const redirectUrl = async (req, res) => {
   const { shortUrl } = req.params;
 
@@ -277,7 +279,11 @@ const redirectUrl = async (req, res) => {
       deviceCategory = "tablet";
     }
 
+    // Get platform (OS name)
+    const platform = uaResult.os.name || "Unknown";
+
     console.log("Detected Device Type:", deviceCategory);
+    console.log("Platform:", platform);
 
     // Capture IP address (handle proxies)
     const ipAddress =
@@ -293,6 +299,7 @@ const redirectUrl = async (req, res) => {
       devices: deviceCategory,
       ipAddress,
       deviceType: deviceCategory,
+      platform: platform, // Save platform (Android, iOS, Windows, etc.)
     });
 
     await newAnalyticsRecord.save();
@@ -302,7 +309,12 @@ const redirectUrl = async (req, res) => {
     await urlRecord.save();
 
     // Redirect to the original URL
-    return res.redirect(urlRecord.url);
+    return res.json({
+      message: "Redirecting...",
+      redirectUrl: urlRecord.url,
+      deviceType: deviceCategory,
+      platform: platform, // Return platform info
+    });
   } catch (error) {
     console.error("Error redirecting to the URL:", error);
     return res

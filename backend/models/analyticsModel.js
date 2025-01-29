@@ -28,6 +28,7 @@ const analyticsSchema = new mongoose.Schema(
  
     ipAddress: { type: String, required: false }, // Store IP address
     deviceType: { type: String, required: false }, // Store device type (mobile, desktop, tablet)
+    platform: { type: String, required: false }, // Store platform (iOS, Android, Web)
   },
 
   { timestamps: true }

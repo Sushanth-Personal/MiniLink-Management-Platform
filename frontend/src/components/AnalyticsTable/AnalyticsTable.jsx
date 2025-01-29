@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
 import useFetch from "../../customHooks/useFetch"; // Import the custom hook
 import styles from "./AnalyticsTable.module.css";
 import { useUserContext } from "../../Contexts/UserContext";
@@ -146,7 +145,7 @@ const AnalyticsTable = ({ handleEditLinkClick }) => {
               </td>
 
               <td className={styles.cell}>{row.ipAddress}</td>
-              <td className={styles.cell}>{row.deviceType}</td>
+              <td className={styles.cell}>{row.platform}</td>
             </tr>
           ))}
         </tbody>
