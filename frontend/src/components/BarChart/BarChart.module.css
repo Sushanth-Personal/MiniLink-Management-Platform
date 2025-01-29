@@ -1,44 +1,112 @@
 .chartContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 16px; /* Spacing between bars */
-    padding: 16px;
-  }
-  
-  .barWrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px; /* Space between label and bar */
-  }
-  
-  .label {
-    font-size: 14px;
-    font-weight: bold;
-    min-width: 100px; /* Ensures labels align vertically */
-  }
-  
-  .bar {
-    background-color: #4caf50; /* Green bar color */
-    height: 24px;
-    border-radius: 12px; /* Smooth, rounded corners */
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px; /* Space for click count inside the bar */
-    color: white; /* Text color for the click count */
-    font-weight: bold;
-  }
-  
-  .clickCount {
-    font-size: 12px;
-  }
-  
-  .error {
-    color: red;
-    font-weight: bold;
-  }
-  
-  .clickCountRight {
-   
-    color: #000;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Spacing between bars */
+  padding: 16px;
+  width: 100%;
+}
+
+.totalClicks{
+  font-weight: bold;
+  font-size: 2rem;
+  display: flex;
+  margin:63px 0px;
+}
+.totalClicks p{
+  color:#1B48DA;
+}
+.displaySection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.clicksPerDay {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Spacing between bars */
+  padding: 16px;
+  border: 1px solid #ececf2;
+  width:50%;
+  height:463px;
+
+}
+
+.displayContent{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:16px;
+  width: 100%;
+}
+.clicksPerDevice{
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Spacing between bars */
+  padding: 16px;
+  border: 1px solid #ececf2;
+  width:50%;
+  height: 463px;
+}
+
+.clicksPerDevice h3{
+  color:#1B48DA;
+}
+
+.clicksPerDay h3{
+  color:#1B48DA;
+}
+.clickCountRight {
+  color: #000;
+  height: 15px;
+}
+
+.barWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Space between label and bar */
+}
+.labelColumn{
+  display: flex;
+  flex-direction: column;
+  justify-self: flex-start;
+  gap:7px;
+}
+
+.barColumn{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap:7px;
+}
+
+.clicksColumn{
+  display: flex;
+  flex-direction: column;
+  gap:4px;
+}
+.label {
+  font-size: 1.6rem;
+  font-weight: bold;
+  min-width: 100px; /* Ensures labels align vertically */
+  line-height: 15px;
+}
+
+.bar {
+  background-color: #1B48DA; /* Green bar color */
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.clickCount {
+  font-size: 12px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}

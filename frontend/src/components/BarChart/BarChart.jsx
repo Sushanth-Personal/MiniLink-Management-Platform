@@ -79,39 +79,83 @@ const BarChart = () => {
     <div className={styles.chartContainer}>
       {/* Total Clicks */}
       <div className={styles.totalClicks}>
-        Total Clicks: {clickData.totalClicks}
+        Total Clicks: <p>{clickData.totalClicks}</p>
       </div>
+      <div className={styles.displaySection}>
+      <div className={styles.clicksPerDay}>
+          {/* Clicks Per Day */}
 
-      {/* Clicks Per Device */}
-      <h3>Clicks Per Device</h3>
-      {clickData.clicksPerDevice.map((device, index) => (
-        <div key={index} className={styles.barWrapper}>
-          <span className={styles.label}>{device.deviceType}</span>
-          <div
-            className={styles.bar}
-            style={{ width: `${device.clicks * 10}px` }} // Adjust width based on clicks
-          ></div>
-          <span className={styles.clickCountRight}>
-            {device.clicks}
-          </span>
-        </div>
-      ))}
-
-      {/* Clicks Per Day */}
-      <h3>Clicks Per Day</h3>
-      {clickData.clicksPerDay.map((day, index) => (
-        <div key={index} className={styles.barWrapper}>
-          <span className={styles.label}>{day.day}</span>
-          <div
-            className={styles.bar}
-            style={{ width: `${day.totalClicks * 10}px` }} // Adjust width dynamically
-          >
-            <span className={styles.clickCountRight}>
-              {day.totalClicks}
-            </span>
+          <h3>Date-wise Clicks</h3>
+          <div className = {styles.displayContent}>
+            <div className={styles.labelColumn}>
+              {clickData.clicksPerDay.map((day, index) => (
+                <>
+                  <div key={index} className={styles.barWrapper}>
+                    <span className={styles.label}>{day.day}</span>
+                  </div>
+                </>
+              ))}
+            </div>
+            <div className={styles.barColumn}>
+              {clickData.clicksPerDay.map((day, index) => (
+                <>
+                  <div key={index} className={styles.barWrapper}>
+                    <div
+                      className={styles.bar}
+                      style={{ width: `${day.totalClicks * 10}px` }} // Adjust width dynamically
+                    ></div>
+                  </div>
+                </>
+              ))}
+            </div>
+            <div className={styles.clicksColumn}>
+              {clickData.clicksPerDay.map((day, index) => (
+                <span key={index} className={styles.clickCountRight}>
+                  {day.totalClicks}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      ))}
+        <div className={styles.clicksPerDevice}>
+          {/* Clicks Per Device */}
+
+          <h3>Clicks Per Device</h3>
+          <div className = {styles.displayContent}>
+            <div className={styles.labelColumn}>
+              {clickData.clicksPerDevice.map((device, index) => (
+                <>
+                  <div key={index} className={styles.barWrapper}>
+                    <span className={styles.label}>
+                    {device.deviceType.charAt(0).toUpperCase() + device.deviceType.slice(1)}
+                    </span>
+                  </div>
+                </>
+              ))}
+            </div>
+            <div className={styles.barColumn}>
+              {clickData.clicksPerDevice.map((device, index) => (
+                <>
+                  <div key={index} className={styles.barWrapper}>
+                    <div
+                      className={styles.bar}
+                      style={{ width: `${device.clicks* 10}px` }} // Adjust width dynamically
+                    ></div>
+                  </div>
+                </>
+              ))}
+            </div>
+            <div className={styles.clicksColumn}>
+              {clickData.clicksPerDevice.map((device, index) => (
+                <span key={index} className={styles.clickCountRight}>
+                  {device.clicks}
+                </span>
+              ))}
+            </div>
+                    </div>
+          </div>
+    
+      </div>
     </div>
   );
 };
