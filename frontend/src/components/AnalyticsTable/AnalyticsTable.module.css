@@ -5,9 +5,14 @@
   height: 90vh;
   background-color: transparent;
   position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  
 }
 
 .table {
+  
   width: 100%;
   border-collapse: separate; /* Keeps borders separated */
   border-spacing: 0; /* Ensures no gaps between cells */
@@ -16,8 +21,8 @@
 }
 .tableWrapper{
   overflow-x: auto;
-  max-width: 100%;
-  width: 98%;
+  max-width: 75vw;
+
 }
 .headerRow {
   background-color: #f3f7fd; /* Tailwind gray-100 */
@@ -36,7 +41,7 @@
   font-weight: bold;
   font-size: 1.6rem;
   width: 10%;
-  min-width: 120px;
+  min-width: 150px;
   overflow: hidden;
   border: none; /* Remove borders from header cells */
 }
@@ -55,7 +60,7 @@
   background-color: white;
   height: 58px;
   font-size: 1.4rem;
-  min-width: 120px;
+  min-width: 150px;
 }
 
 .row:hover {
@@ -234,4 +239,67 @@
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.08);
   transform: scale(0.95);
   background-color: #919EAB;
+}
+
+@media screen and (max-width: 1150px) {
+  .tableWrapper{
+    max-width: 72vw;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .tableWrapper{
+    max-width: 68vw;
+  }
+}
+
+@media screen and (max-width: 950px) {
+  .tableWrapper{
+    max-width: 65vw;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .tableWrapper{
+    max-width: 91vw;  
+  }
+  
+}
+
+@media screen and (max-width: 720px) {
+  .tableWrapper{
+    max-width: 89vw;
+  }
+}
+
+@media screen and (max-width: 570px) {
+  .tableWrapper{
+    max-width: 87vw;
+  }
+  
+}
+
+
+
+@media screen and (max-width: 420px) {
+  .tableWrapper{
+    max-width: 85vw;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .tableWrapper{
+    max-width: 88vw;
+    
+  }
+
+  .table{
+    transform: scale(0.9);
+  }
+}
+
+@media screen and (max-width: 340px) {
+  .tableWrapper{
+    max-width: 80vw;
+  }
 }

@@ -240,6 +240,9 @@
 }
 
 @media screen and (max-width: 500px) {
+  .mainContent {
+    padding: 0px 10px;
+  }
   .searchContainer {
     transform: scale(0.8);
   }
