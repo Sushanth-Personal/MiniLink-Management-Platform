@@ -9,6 +9,7 @@ import BarChart from "../../components/BarChart/BarChart";
 import ProfileData from "../../components/ProfileData/ProfileData";
 import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";
 import { useUserContext } from "../../Contexts/UserContext";
+import useScreenSize from "../../customHooks/useScreenSize";
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -55,7 +56,8 @@ const reducer = (state, action) => {
 
 const Dashboard = () => {
   useAuth();
-
+  const tabletSize = useScreenSize(900);
+  const mobileHorizontalSize = useScreenSize(600);
   // Use the reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
@@ -124,82 +126,101 @@ const Dashboard = () => {
 
   return (
     <section className={styles.Dashboard}>
-      <div className={styles.menuBar}>
-        <img
-          src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624351/Logo_Wrapper_uuv2gj.png"
-          alt="logo"
-        />
-        <div className={styles.menuTray}>
-          <button
-            onClick={() => dispatch({ type: "SET_DASHBOARD_ACTIVE" })}
-            className={`${styles.trayButtons} ${
-              state.dashboardActive ? styles.active : ""
-            }`}
-          >
-            <img
-              src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624518/Icons_zqiriu.png"
-              alt="dashboard"
-            />
-            Dashboard
-          </button>
-          <button
-            onClick={() => dispatch({ type: "SET_LINK_ACTIVE" })}
-            className={`${styles.trayButtons} ${
-              state.linkActive ? styles.active : ""
-            }`}
-          >
-            <img
-              src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624522/Icon_rahplm.png"
-              alt="link"
-            />
-            Link
-          </button>
-          <button
-            onClick={() => dispatch({ type: "SET_ANALYTICS_ACTIVE" })}
-            className={`${styles.trayButtons} ${
-              state.analyticsActive ? styles.active : ""
-            }`}
-          >
-            <img
-              src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624528/Icon_1_g710hl.png"
-              alt="analytics"
-            />
-            Analytics
-          </button>
-        </div>
-        <div className={styles.settingsTray}>
-          <div
-            className={`${styles.trayButtons} ${styles.settings} ${
-              state.settingsActive ? styles.active : ""
-            }`}
-            onClick={() => dispatch({ type: "SET_SETTINGS_ACTIVE" })}
-          >
-            <img
-              className={styles.settingsIcon}
-              src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624533/Frame_vnitbr.png"
-              alt="settings"
-            />
-            Settings
+      {!tabletSize && !mobileHorizontalSize && (
+        <div className={styles.menuBar}>
+          <img
+            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624351/Logo_Wrapper_uuv2gj.png"
+            alt="logo"
+          />
+          <div className={styles.menuTray}>
+            <button
+              onClick={() =>
+                dispatch({ type: "SET_DASHBOARD_ACTIVE" })
+              }
+              className={`${styles.trayButtons} ${
+                state.dashboardActive ? styles.active : ""
+              }`}
+            >
+              <img
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624518/Icons_zqiriu.png"
+                alt="dashboard"
+              />
+              Dashboard
+            </button>
+            <button
+              onClick={() => dispatch({ type: "SET_LINK_ACTIVE" })}
+              className={`${styles.trayButtons} ${
+                state.linkActive ? styles.active : ""
+              }`}
+            >
+              <img
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624522/Icon_rahplm.png"
+                alt="link"
+              />
+              Link
+            </button>
+            <button
+              onClick={() =>
+                dispatch({ type: "SET_ANALYTICS_ACTIVE" })
+              }
+              className={`${styles.trayButtons} ${
+                state.analyticsActive ? styles.active : ""
+              }`}
+            >
+              <img
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624528/Icon_1_g710hl.png"
+                alt="analytics"
+              />
+              Analytics
+            </button>
+          </div>
+          <div className={styles.settingsTray}>
+            <div
+              className={`${styles.trayButtons} ${styles.settings} ${
+                state.settingsActive ? styles.active : ""
+              }`}
+              onClick={() =>
+                dispatch({ type: "SET_SETTINGS_ACTIVE" })
+              }
+            >
+              <img
+                className={styles.settingsIcon}
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624533/Frame_vnitbr.png"
+                alt="settings"
+              />
+              Settings
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       <div className={styles.mainSection}>
         <nav className={styles.navBar}>
           <div className={styles.leftNav}>
-            <img
-              src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634206/%EF%B8%8F_mhduvo.png"
-              alt="goodmorning"
-            />
-            <p>
-              Good morning, {userData.username}
-              <span>
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            </p>
+            {tabletSize && (
+              <img
+                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624351/Logo_Wrapper_uuv2gj.png"
+                alt="logo"
+              />
+            )}
+            {!tabletSize && !mobileHorizontalSize && (
+              <>
+                <img
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634206/%EF%B8%8F_mhduvo.png"
+                  alt="goodmorning"
+                />
+                <p>
+                  Good morning, {userData.username}
+                  <span>
+                    {new Date().toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </p>
+              </>
+            )}
           </div>
 
           <div className={styles.midNav}>
@@ -230,7 +251,93 @@ const Dashboard = () => {
             </div>
           </div>
         </nav>
-        <div className={`${styles.mainContent} ${state.dashboardActive||state.settingsActive?styles.dashboardActive:""}`}>
+        {console.log(tabletSize)}
+        {tabletSize && (
+          <div className={styles.menuBar}>
+            <div className={styles.menuTray}>
+              {tabletSize && (
+                <div className={styles.leftNavMobile}>
+                  <img
+                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634206/%EF%B8%8F_mhduvo.png"
+                    alt="goodmorning"
+                  />
+                  <p>
+                    Good morning, {userData.username}
+                    <span>
+                      {new Date().toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={() =>
+                  dispatch({ type: "SET_DASHBOARD_ACTIVE" })
+                }
+                className={`${styles.trayButtons} ${
+                  state.dashboardActive ? styles.active : ""
+                }`}
+              >
+                <img
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624518/Icons_zqiriu.png"
+                  alt="dashboard"
+                />
+                Dashboard
+              </button>
+              <button
+                onClick={() => dispatch({ type: "SET_LINK_ACTIVE" })}
+                className={`${styles.trayButtons} ${
+                  state.linkActive ? styles.active : ""
+                }`}
+              >
+                <img
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624522/Icon_rahplm.png"
+                  alt="link"
+                />
+                Link
+              </button>
+              <button
+                onClick={() =>
+                  dispatch({ type: "SET_ANALYTICS_ACTIVE" })
+                }
+                className={`${styles.trayButtons} ${
+                  state.analyticsActive ? styles.active : ""
+                }`}
+              >
+                <img
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624528/Icon_1_g710hl.png"
+                  alt="analytics"
+                />
+                Analytics
+              </button>
+              <div
+                className={`${styles.trayButtons} ${
+                  styles.settings
+                } ${state.settingsActive ? styles.active : ""}`}
+                onClick={() =>
+                  dispatch({ type: "SET_SETTINGS_ACTIVE" })
+                }
+              >
+                <img
+                  className={styles.settingsIcon}
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624533/Frame_vnitbr.png"
+                  alt="settings"
+                />
+                Settings
+              </div>
+            </div>
+          </div>
+        )}
+        <div
+          className={`${styles.mainContent} ${
+            state.dashboardActive || state.settingsActive
+              ? styles.dashboardActive
+              : ""
+          }`}
+        >
           {state.linkActive && (
             <ResultTable
               handleDeleteLinkClick={handleDeleteLinkClick}

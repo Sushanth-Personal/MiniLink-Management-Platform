@@ -125,6 +125,7 @@
 
 .searchContainer{
     max-width: 240px;
+    min-width: 190px;
     height: 40px;
     border-radius: 6px;
     border: 1px solid #ECECF2;
@@ -136,6 +137,7 @@
     color:#878BA9;
     transform: 150ms ease-in-out;
     flex:1;
+    margin-right: 10px;
 }
 
 .searchContainer input{
@@ -191,4 +193,26 @@
 
 .dashboardActive{
     background-color: white;
+}
+
+@media screen and (max-width: 900px) {
+    .menuBar{
+        flex-direction: row;
+    }
+
+    .menuTray{
+        flex-direction: row;
+    }
+
+    .settingsTray{
+       border:none;
+       padding: none;
+    }
+
+    .leftNavMobile{
+        min-width: 120px;
+        display: flex;
+        align-items: flex-start;
+        gap:3px;
+    }
 }
