@@ -239,7 +239,6 @@ const updateUrl = async (req, res) => {
 
 
 
-
 const redirectUrl = async (req, res) => {
   const { shortUrl } = req.params;
 
@@ -261,8 +260,7 @@ const redirectUrl = async (req, res) => {
     console.log("Redirecting to:", urlRecord.url);
 
     // Capture the User-Agent string
-    const userAgentString =
-      req.headers["x-forwarded-user-agent"] || req.headers["user-agent"];
+    const userAgentString = req.headers["x-forwarded-user-agent"] || req.headers["user-agent"];
     console.log("User-Agent:", userAgentString);
 
     // Parse User-Agent
@@ -285,8 +283,7 @@ const redirectUrl = async (req, res) => {
     console.log("Platform:", platform);
 
     // Capture IP address (handle proxies)
-    const ipAddress =
-      req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
+    const ipAddress = req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
 
     // Create a new analytics record
     const newAnalyticsRecord = new Analytics({
@@ -308,19 +305,13 @@ const redirectUrl = async (req, res) => {
     await urlRecord.save();
 
     // Redirect to the original URL
-    return res.json({
-      message: "Redirecting...",
-      redirectUrl: urlRecord.url,
-      deviceType: deviceCategory,
-      platform: platform, // Return platform info
-    });
+    return res.redirect(urlRecord.url);
   } catch (error) {
     console.error("Error redirecting to the URL:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error. Unable to redirect." });
+    return res.status(500).json({ message: "Server error. Unable to redirect." });
   }
 };
+
 
 
 const getUrlsByUser = async (req, res) => {
