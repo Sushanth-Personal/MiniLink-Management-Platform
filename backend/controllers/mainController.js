@@ -239,7 +239,6 @@ const updateUrl = async (req, res) => {
 
 
 
-const UAParser = require("ua-parser-js");
 
 const redirectUrl = async (req, res) => {
   const { shortUrl } = req.params;
