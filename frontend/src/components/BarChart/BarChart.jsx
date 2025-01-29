@@ -39,38 +39,40 @@ const BarChart = () => {
         const deviceData = fetchedData.clicksPerDevice.find(
           (item) => item.deviceType === device
         );
-        console.log(deviceData);
         return {
           deviceType: device,
           clicks: deviceData ? deviceData.clicks : 0, // Set 0 if the device is not in the data
         };
       });
-
-      // Process clicksPerDay to make it cumulative
+  
+      // Process clicksPerDay to make it cumulative and reverse the order
       const cumulativeClicksPerDay = fetchedData.clicksPerDay.reduce(
-        (acc, currentDay) => {
-          // If there are no previous totals, start with 0
-          const previousTotal =
-            acc.length > 0 ? acc[acc.length - 1].totalClicks : 0;
-
-          // Add current day's clicks to the running total
+        (acc, currentDay, index) => {
+          const previousTotal = index === 0 ? 0 : acc[index - 1].totalClicks; // Initialize total for the first day
           acc.push({
             day: currentDay.day,
-            totalClicks: previousTotal + currentDay.totalClicks, // Cumulative total
+            totalClicks: previousTotal + currentDay.totalClicks, // Add current day's clicks to the running total
           });
-
+  
           return acc;
         },
         [] // Start with an empty array
       );
-
+  
+      // Reverse the order and take the latest 4 dates
+      const latest4ClicksPerDay = cumulativeClicksPerDay
+        .reverse() // Reverse the order of the dates
+        .slice(0, 4); // Keep only the latest 4
+  
       setClickData({
         totalClicks: fetchedData.totalClicks,
         clicksPerDevice: updatedClicksPerDevice,
-        clicksPerDay: cumulativeClicksPerDay, // Use cumulative data
+        clicksPerDay: latest4ClicksPerDay, // Use the reversed and sliced data
       });
     }
   }, [fetchedData]);
+  
+  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className={styles.error}>Error: {error}</p>;

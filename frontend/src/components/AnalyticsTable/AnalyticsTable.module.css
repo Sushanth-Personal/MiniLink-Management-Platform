@@ -50,6 +50,7 @@
   background-color: white;
   height: 58px;
   font-size: 1.4rem;
+  padding-left: 24px;
 }
 
 .row:hover {
@@ -145,6 +146,7 @@
   white-space: nowrap; /* Prevents the URL from wrapping */
   border-bottom: none;
   height: 58px;
+  padding-left: 24px;
 }
 
 .shortUrl {

@@ -448,7 +448,7 @@ const getClicks = async (req, res) => {
           totalClicks: { $sum: "$count" }, // Total clicks for the day
           clicksPerDevice: {
             $push: {
-              deviceType: "$_id.deviceType", // Extract deviceType as a string
+              deviceType: "$_id.deviceType",
               clicks: "$count",
             },
           }, // Collect device types and their counts for each day
@@ -459,11 +459,8 @@ const getClicks = async (req, res) => {
           _id: null, // Group everything to calculate overall totals
           totalClicks: { $sum: "$totalClicks" }, // Grand total clicks
           clicksPerDevice: {
-            $push: {
-              deviceType: "$clicksPerDevice.deviceType", // Flatten deviceType
-              clicks: { $sum: "$clicksPerDevice.clicks" }, // Flatten device data
-            },
-          },
+            $push: "$clicksPerDevice",
+          }, // Collect all device clicks properly
           clicksPerDay: {
             $push: {
               day: "$_id",
@@ -478,15 +475,21 @@ const getClicks = async (req, res) => {
       return res.status(404).json({ error: "No analytics data found" });
     }
 
-    // Final adjustment: flatten `clicksPerDevice`
-    const finalClicksPerDevice = analyticsData[0].clicksPerDevice.map((device) => ({
-      deviceType: device.deviceType[0], // Extract single deviceType as string
-      clicks: device.clicks,
+    // Flatten clicksPerDevice correctly
+    const deviceClicksMap = new Map();
+
+    analyticsData[0].clicksPerDevice.flat().forEach(({ deviceType, clicks }) => {
+      deviceClicksMap.set(deviceType, (deviceClicksMap.get(deviceType) || 0) + clicks);
+    });
+
+    const finalClicksPerDevice = Array.from(deviceClicksMap, ([deviceType, clicks]) => ({
+      deviceType,
+      clicks,
     }));
 
     res.status(200).json({
       totalClicks: analyticsData[0].totalClicks,
-      clicksPerDevice: finalClicksPerDevice, // Use flattened device data
+      clicksPerDevice: finalClicksPerDevice, // Now properly aggregated
       clicksPerDay: analyticsData[0].clicksPerDay,
     });
   } catch (error) {
@@ -494,6 +497,7 @@ const getClicks = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 const deleteUrl = async (req, res) => {
   try {
