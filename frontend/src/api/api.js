@@ -96,7 +96,7 @@ export const registerUser = async (username, email,contact,password) => {
     return response.data.message; //
     //  Return the data directly
   } catch (error) {
-    console.error("Error registering:", error.response.data.message);
+    console.error("Error registering:", error);
 
     return error.response.data.message; // Handle error by returning null or an empty array
   }

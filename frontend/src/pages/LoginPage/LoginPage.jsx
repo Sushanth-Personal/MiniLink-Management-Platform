@@ -1,187 +1,250 @@
 import styles from "./loginpage.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import useScreenSize from "../../customHooks/useScreenSize";
-import {useUserContext} from "../../Contexts/UserContext";
-import { loginUser, registerUser} from "../../api/api";
+import { useUserContext } from "../../Contexts/UserContext";
+import { loginUser, registerUser } from "../../api/api";
 import ClipLoader from "react-spinners/ClipLoader";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   validateEmail,
   validatePassword,
-  validateContact
+  validateContact,
 } from "../../errorHandler/inputError";
 
 const LoginPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+  // const isMobile = useScreenSize(768);
+  const { setIsLoggedIn, setUserData } = useUserContext();
+  const [isJustRegistered, setIsJustRegistered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserDataState] = useState({
+    username: "",
+    email: "",
+    password: "",
+    contact: "",
+  });
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [isLogin, setIsLogin] = useState(true);
-    const navigate = useNavigate();
-    // const isMobile = useScreenSize(768);
-    const { setIsLoggedIn, setUserData} = useUserContext();
-    const [isJustRegistered, setIsJustRegistered] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [userData, setUserDataState] = useState({
-      username: "",
-      email: "",
-      password: "", 
-      contact: "",
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    contact: "",
+    password: "",
+    confirmPassword: "",
+  });
 
+  useEffect(() => {
+    if (errors.username || errors.email || errors.contact) {
+      toast.error("Error Registering ...", {
+        position: "top-right",
+        autoClose: 3000, // Closes toast after 3 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  }, [errors]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserDataState({
+      ...userData,
+      [name]: value,
     });
-    const [confirmPassword, setConfirmPassword] = useState("");
-  
-    const [errors, setErrors] = useState({
+  };
+
+  const handleRegisterLink = () => {
+    setIsLogin(!isLogin);
+    setIsJustRegistered(false);
+    setErrors({
       username: "",
       email: "",
-      contact:"",
+      contact: "",
       password: "",
       confirmPassword: "",
     });
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setUserDataState({
-        ...userData,
-        [name]: value,
-      });
-    };
-  
-    const handleRegisterLink = () => {
-      setIsLogin(!isLogin);
-      setIsJustRegistered(false);
-      setErrors({
-        username: "",
-        email: "",
-        contact:"",
-        password: "",
-        confirmPassword: "",
-      });
-      setUserDataState({
-        username: "",
-        email: "",
-        contact:"",
-        password: "",
-      });
-      setConfirmPassword("");
-    };
-    const handleRegister = async (e) => {
-      e.preventDefault();
-      setIsLoading(true);
-      const { username, email,contact, password} = userData;
-      console.log(username, email,contact, password);
-      const emailError = validateEmail(email);
-      const passwordError = validatePassword(password);
-      const contactError = validateContact(contact);
-      const confirmPasswordError = password !== confirmPassword ? "Passwords do not match" : "";
-  
-      setErrors({
-        username: !username ? "Username is required" : "",
-        email: emailError?.error || "",
-        contact: contactError?.error || "",
-        password: passwordError?.error || "",
-        confirmPassword: confirmPasswordError,
-      });
-  
-      if (!username || emailError?.error || contactError?.error || passwordError?.error || confirmPasswordError) {
-        setIsLoading(false);
-        return;
+    setUserDataState({
+      username: "",
+      email: "",
+      contact: "",
+      password: "",
+    });
+    setConfirmPassword("");
+  };
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { username, email, contact, password } = userData;
+    console.log(username, email, contact, password);
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    const contactError = validateContact(contact);
+    const confirmPasswordError =
+      password !== confirmPassword ? "Passwords do not match" : "";
+
+    setErrors({
+      username: !username ? "Username is required" : "",
+      email: emailError?.error || "",
+      contact: contactError?.error || "",
+      password: passwordError?.error || "",
+      confirmPassword: confirmPasswordError,
+    });
+
+    if (
+      !username ||
+      emailError?.error ||
+      contactError?.error ||
+      passwordError?.error ||
+      confirmPasswordError
+    ) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await registerUser(
+        username,
+        email,
+        contact,
+        password
+      );
+      console.log(response);
+      setIsLoading(false);
+
+      if (response === "Success") {
+        setIsJustRegistered(true);
+        toast.success("Registeration Successful!", {
+          position: "top-right",
+          autoClose: 3000, // Closes toast after 3 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setIsLogin(true);
+
+      } else if (response === "Username already exists") {
+        setErrors({ ...errors, username: "Username already exists" });
+      } else if (response === "Email already exists") {
+        setErrors({ username: "", email: "Email already exists" });
+      } else if (response === "Contact already exists") {
+        setErrors({
+          username: "",
+          contact: "Contact already exists",
+        });
       }
-  
-  console.log(username, email, password);
-      try {
-        const response = await registerUser(username, email,contact, password);
-        setIsLoading(false);
-  
-        if (response === "Success") {
-          setIsJustRegistered(true);
-          setIsLogin(true);
-        } 
-        else if(response === "Username already exists") {
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert(
+        "An error occurred while registering. Please try again later."
+      );
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { email, password } = userData;
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    setErrors({
+      email: emailError?.error || "",
+      password: passwordError?.error || "",
+    });
+
+    if (emailError.error || passwordError.error) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await loginUser(email, password);
+
+      toast.success("Login successful!", {
+        position: "top-right",
+        autoClose: 3000, // Closes toast after 3 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      setIsLoading(false);
+      if (response.message === "Success") {
+        const completeUserData = {
+          ...response.user,
+          userId: response.user._id,
+        };
+        setIsLoggedIn(true);
+        setUserData(completeUserData);
+
+        navigate("/");
+      } else {
+        if (response === "Invalid email") {
           setErrors({
             ...errors,
-            username: "Username already exists",
-          })
-        } else if(response === "Email already exists") {
+            email: "Invalid email",
+            password: "",
+          });
+        } else if (response === "Invalid password") {
           setErrors({
             ...errors,
-            username:"",
-            email: "Email already exists",
-          })
+            email: "",
+            password: "Invalid password",
+          });
         }
-      } catch (error) {
-        console.error("Error during registration:", error);
-        alert("An error occurred while registering. Please try again later.");
       }
-    };
-    
-    const handleLogin = async (e) => {
-      e.preventDefault();
-      setIsLoading(true);
-      console.log(userData);
-      const { email, password } = userData;
-      const emailError = validateEmail(email);
-      const passwordError = validatePassword(password);
-      
-      setErrors({
-        email: emailError?.error || "",
-        password: passwordError?.error || "",
-      });
-  
-      if (emailError.error || passwordError.error) {
-        setIsLoading(false);
-        return;
-      }
-  
-      try {
-        console.log(email, password);
-        const response = await loginUser(email, password);
-        setIsLoading(false);
-        if (response.message === "Success") {
-          
-          const completeUserData = { ...response.user, userId: response.user._id };
-          setIsLoggedIn(true);
-          setUserData(completeUserData);
-          navigate("/");
-        } else {
-          if(response==="Invalid email"){
-            setErrors({
-              ...errors,
-              email: "Invalid email",
-              password: "",
-            })
-          } else if(response==="Invalid password"){
-            setErrors({
-              ...errors,
-              email: "",
-              password: "Invalid password",
-            })
-          }
-        }
-      } catch (error) {
-        console.error("Error during login:", error);
-        alert("An error occurred while logging in. Please try again later.");
-      }
-    };
-  
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert(
+        "An error occurred while logging in. Please try again later."
+      );
+    }
+  };
+
   return (
-    <section className = {styles.loginPage}>
-        <div className = {styles.leftContainer}>
-            <img 
-            className = {styles.logo}
-            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555978/download_2_cmwand.png" alt="logo" />
-            <img
-            className = {styles.leftBackground}
-            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555992/m_image_nplbjl.png" alt="leftBackground" />
-        </div>
-<div className={styles.loginContainer}>
+    <section className={styles.loginPage}>
+      <div className={styles.leftContainer}>
+        <img
+          className={styles.logo}
+          src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555978/download_2_cmwand.png"
+          alt="logo"
+        />
+        <img
+          className={styles.leftBackground}
+          src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555992/m_image_nplbjl.png"
+          alt="leftBackground"
+        />
+      </div>
+      <div className={styles.loginContainer}>
         <nav>
-            <button className = {styles.navSignUp}>Sign Up</button>
-            <button className = {styles.navLogin}>Login</button>
+          <button className={styles.navSignUp}>Sign Up</button>
+          <button className={styles.navLogin}>Login</button>
         </nav>
-        <h1 className = {styles.heading}>{isLogin ? "Login" : "Join us Today!"}</h1>
- 
+        <h1 className={styles.heading}>
+          {isLogin ? "Login" : "Join us Today!"}
+        </h1>
+
         <div className={styles.loginForm}>
           <>
             {!isLogin && (
-              <div className={`${styles.userNameForm} ${errors.username ? styles.errorField : ""}`}>
+              <div
+                className={`${styles.userNameForm} ${
+                  errors.username ? styles.errorField : ""
+                }`}
+              >
                 <input
                   type="text"
                   name="username"
@@ -191,8 +254,12 @@ const LoginPage = () => {
                 <div className={styles.error}>{errors.username}</div>
               </div>
             )}
-       {!isLogin && (
-              <div className={`${styles.contactForm} ${errors.contact ? styles.errorField : ""}`}>
+            {!isLogin && (
+              <div
+                className={`${styles.contactForm} ${
+                  errors.contact ? styles.errorField : ""
+                }`}
+              >
                 <input
                   type="contact"
                   name="contact"
@@ -203,12 +270,13 @@ const LoginPage = () => {
               </div>
             )}
 
-       {isLogin && (
-           <div className = {styles.emptySpace}></div>
-       )}
-            
+            {isLogin && <div className={styles.emptySpace}></div>}
 
-            <div className={`${styles.emailForm} ${errors.email ? styles.errorField : ""}`}>
+            <div
+              className={`${styles.emailForm} ${
+                errors.email ? styles.errorField : ""
+              }`}
+            >
               <input
                 type="email"
                 name="email"
@@ -230,8 +298,11 @@ const LoginPage = () => {
             </div>
 
             {!isLogin && (
-              <div className={`${styles.passwordForm} ${errors.confirmPassword ? styles.errorField : ""}`}>
-               
+              <div
+                className={`${styles.passwordForm} ${
+                  errors.confirmPassword ? styles.errorField : ""
+                }`}
+              >
                 <input
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   value={confirmPassword}
@@ -239,26 +310,35 @@ const LoginPage = () => {
                   name="password"
                   placeholder="xxxxxxxxx"
                 />
-                 <div className={styles.error}>{errors.confirmPassword}</div>
+                <div className={styles.error}>
+                  {errors.confirmPassword}
+                </div>
               </div>
             )}
-{isLogin ?(  <button
-              onClick={handleLogin}
-              className={styles.loginButton}
-            >
-              {isLoading? <ClipLoader color="white" size={25} />:"Log In"}
-             
-            </button>):(
-                  <button
-                  onClick={handleRegister}
-                  className={styles.loginButton}
-                >
-                  {isLoading? <ClipLoader color="white" size={25} />:"Sign Up"}
-                </button>
+            {isLogin ? (
+              <button
+                onClick={handleLogin}
+                className={styles.loginButton}
+              >
+                {isLoading ? (
+                  <ClipLoader color="white" size={25} />
+                ) : (
+                  "Log In"
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={handleRegister}
+                className={styles.loginButton}
+              >
+                {isLoading ? (
+                  <ClipLoader color="white" size={25} />
+                ) : (
+                  "Sign Up"
+                )}
+              </button>
             )}
-          
 
-        
             {!isLogin ? (
               <div className={styles.signUpText}>
                 <p>Already have an account?</p>
@@ -270,7 +350,7 @@ const LoginPage = () => {
                   }}
                   href=""
                 >
-                Login
+                  Login
                 </a>
               </div>
             ) : (
@@ -292,7 +372,7 @@ const LoginPage = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

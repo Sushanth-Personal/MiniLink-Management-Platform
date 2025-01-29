@@ -32,6 +32,14 @@ const registerUser = async (req, res) => {
         .json({ message: "Email already exists" });
     }
 
+     // Check if email already exists
+     const existingNumber = await User.exists({ contact });
+     if (existingNumber) {
+       return res
+         .status(400)
+         .json({ message: "Contact already exists" });
+     }
+
     // Create new user if no existing user or email found
     const user = new User({ username, email,contact, password });
 
