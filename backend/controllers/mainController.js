@@ -8,7 +8,7 @@ const Url = require("../models/urlModel");
 const crypto = require("crypto");
 const base62 = require("base62"); // A Base62 encoding library
 const Analytics = require("../models/analyticsModel");
-const userAgent = require("user-agent"); // Import the user-agent package
+const UAParser = require("ua-parser-js");
 const getUser = async (req, res) => {
   try {
     // Get the userId from cookies
@@ -237,10 +237,12 @@ const updateUrl = async (req, res) => {
   }
 };
 
+
+
 const redirectUrl = async (req, res) => {
   const { shortUrl } = req.params;
 
-  console.log(shortUrl);
+  console.log("Short URL:", shortUrl);
 
   try {
     // Find the URL from the database using the short URL
@@ -252,43 +254,52 @@ const redirectUrl = async (req, res) => {
 
     // Check if the URL has expired
     if (urlRecord.expiry && new Date(urlRecord.expiry) < new Date()) {
-      return res
-        .status(400)
-        .json({ message: "The URL has expired." });
+      return res.status(400).json({ message: "The URL has expired." });
     }
 
-    console.log(urlRecord.url);
+    console.log("Redirecting to:", urlRecord.url);
 
-    // Capture the IP address (if behind a proxy, use req.headers['x-forwarded-for'])
-    const ipAddress = req.ip;
+    // Capture the User-Agent string
+    const userAgentString =
+      req.headers["x-forwarded-user-agent"] || req.headers["user-agent"];
+    console.log("User-Agent:", userAgentString);
 
-    // Capture the device type using the User-Agent header
-    const device = userAgent.parse(req.headers["user-agent"]);
-    let deviceCategory = "desktop"; // Default to desktop
+    // Parse User-Agent
+    const parser = new UAParser();
+    parser.setUA(userAgentString);
+    const uaResult = parser.getResult();
 
-    if (device.isMobile) {
+    // Determine device category
+    let deviceCategory = "desktop"; // Default
+    if (uaResult.device.type === "mobile") {
       deviceCategory = "mobile";
-    } else if (device.isTablet) {
+    } else if (uaResult.device.type === "tablet") {
       deviceCategory = "tablet";
     }
 
-    // Create a new analytics record for the click
+    console.log("Detected Device Type:", deviceCategory);
+
+    // Capture IP address (handle proxies)
+    const ipAddress =
+      req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
+
+    // Create a new analytics record
     const newAnalyticsRecord = new Analytics({
-      userId: urlRecord.userId, // Reference to the user who created the URL
-      urlId: urlRecord._id, // Reference to the URL being tracked
+      userId: urlRecord.userId,
+      urlId: urlRecord._id,
       url: urlRecord.url,
       shortUrl: urlRecord.shortUrl,
-      date: new Date(), // Current date and time
-      devices: deviceCategory, // The device category (mobile, desktop, tablet)
-      ipAddress, // Store IP address
-      deviceType: deviceCategory, // Store device type
+      date: new Date(),
+      devices: deviceCategory,
+      ipAddress,
+      deviceType: deviceCategory,
     });
 
-    await newAnalyticsRecord.save(); // Save the new analytics record
+    await newAnalyticsRecord.save();
 
-    // Increment the clicks field in the UrlRecord
-    urlRecord.clicks = (urlRecord.clicks || 0) + 1; // Ensure it's incremented correctly
-    await urlRecord.save(); // Save the updated URL record
+    // Increment the clicks field
+    urlRecord.clicks = (urlRecord.clicks || 0) + 1;
+    await urlRecord.save();
 
     // Redirect to the original URL
     return res.redirect(urlRecord.url);
@@ -299,6 +310,7 @@ const redirectUrl = async (req, res) => {
       .json({ message: "Server error. Unable to redirect." });
   }
 };
+
 
 const getUrlsByUser = async (req, res) => {
   try {
