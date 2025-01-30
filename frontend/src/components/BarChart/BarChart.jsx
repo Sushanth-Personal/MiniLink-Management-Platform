@@ -72,7 +72,9 @@ const BarChart = () => {
     }
   }, [fetchedData]);
   
-  
+    // Calculate max values for normalization
+    const maxClicksPerDay = Math.max(...clickData.clicksPerDay.map(day => day.totalClicks), 1);
+    const maxClicksPerDevice = Math.max(...clickData.clicksPerDevice.map(device => device.clicks), 1);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className={styles.error}>Error: {error}</p>;
@@ -101,10 +103,11 @@ const BarChart = () => {
             <div className={styles.barColumn}>
               {clickData.clicksPerDay.map((day, index) => (
                 <>
+                {console.log("MaxCLicks per day", day.totalClicks,maxClicksPerDay)}
                   <div key={index} className={styles.barWrapper}>
                     <div
                       className={styles.bar}
-                      style={{ width: `${day.totalClicks * 10}px` }} // Adjust width dynamically
+                      style={{ width: `${(day.totalClicks / maxClicksPerDay) * 100}px` }} // Adjust width dynamically
                     ></div>
                   </div>
                 </>
@@ -138,10 +141,12 @@ const BarChart = () => {
             <div className={styles.barColumn}>
               {clickData.clicksPerDevice.map((device, index) => (
                 <>
+                {console.log("MaxCLicks per device", device.clicks ,maxClicksPerDay)}
                   <div key={index} className={styles.barWrapper}>
                     <div
                       className={styles.bar}
-                      style={{ width: `${device.clicks* 10}px` }} // Adjust width dynamically
+                      style={{ width: `${(device.clicks / maxClicksPerDevice) * 100}px` }}
+                      
                     ></div>
                   </div>
                 </>

@@ -101,12 +101,12 @@
 }
 
 .bar {
-  background-color: #1B48DA; /* Green bar color */
+  background-color: #1B48DA; /* Blue bar color */
   height: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  display: block; /* Change from flex to block */
+  min-width: 2px; /* Ensures visibility even for very small values */
 }
+
 
 .clickCount {
   font-size: 12px;
