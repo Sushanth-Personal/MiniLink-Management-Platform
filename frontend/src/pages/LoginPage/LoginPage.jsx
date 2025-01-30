@@ -6,7 +6,7 @@ import { loginUser, registerUser } from "../../api/api";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import useScreenSize from "../../customHooks/useScreenSize";
 import {
   validateEmail,
   validatePassword,
@@ -15,8 +15,9 @@ import {
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoginPage, setIsLoginPage] = useState(true);
   const navigate = useNavigate();
-  // const isMobile = useScreenSize(768);
+  const isTablet = useScreenSize(980);
   const { setIsLoggedIn, setUserData } = useUserContext();
   const [isJustRegistered, setIsJustRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -131,7 +132,6 @@ const LoginPage = () => {
           theme: "light",
         });
         setIsLogin(true);
-
       } else if (response === "Username already exists") {
         setErrors({ ...errors, username: "Username already exists" });
       } else if (response === "Email already exists") {
@@ -217,11 +217,13 @@ const LoginPage = () => {
   return (
     <section className={styles.loginPage}>
       <div className={styles.leftContainer}>
-        <img
-          className={styles.logo}
-          src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555978/download_2_cmwand.png"
-          alt="logo"
-        />
+        {!isTablet && (
+          <img
+            className={styles.logo}
+            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555978/download_2_cmwand.png"
+            alt="logo"
+          />
+        )}
         <img
           className={styles.leftBackground}
           src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555992/m_image_nplbjl.png"
@@ -229,9 +231,26 @@ const LoginPage = () => {
         />
       </div>
       <div className={styles.loginContainer}>
+        {isTablet && (
+          <img
+            className={styles.logo}
+            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737555978/download_2_cmwand.png"
+            alt="logo"
+          />
+        )}
         <nav>
-          <button className={styles.navSignUp}>Sign Up</button>
-          <button className={styles.navLogin}>Login</button>
+          <button
+            onClick ={() =>setIsLogin(false)}
+            className={`${styles.navLogin} ${isLogin ? "" : styles.active}`} // Add the active class if isLogin is falsestyles.navSignUp}
+          >
+            Sign Up
+          </button>
+          <button
+            onClick={() => setIsLogin(true)}
+            className={`${styles.navLogin} ${isLogin ? styles.active : ""}`}
+          >
+            Login
+          </button>
         </nav>
         <h1 className={styles.heading}>
           {isLogin ? "Login" : "Join us Today!"}
@@ -239,7 +258,7 @@ const LoginPage = () => {
 
         <div className={styles.loginForm}>
           <>
-            {!isLogin && (
+            {!isLogin &&(
               <div
                 className={`${styles.userNameForm} ${
                   errors.username ? styles.errorField : ""

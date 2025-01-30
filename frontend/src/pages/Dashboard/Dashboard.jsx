@@ -265,8 +265,8 @@ const Dashboard = () => {
             </div>
           </div>
         </nav>
-{/*        
-        {tabletSize && (
+       
+        {/* {tabletSize && (
           <div className={styles.menuBar}>
             <div className={styles.menuTray}>
               {tabletSize && (
@@ -352,12 +352,12 @@ const Dashboard = () => {
               : ""
           }`}
         >
-          {/* {state.linkActive && (
+          {state.linkActive && (
             <ResultTable
               handleDeleteLinkClick={handleDeleteLinkClick}
               handleEditLinkClick={handleEditLinkClick}
             />
-          )} */}
+          )}
           {state.analyticsActive && (
             <AnalyticsTable
               handleEditLinkClick={handleEditLinkClick}
@@ -407,7 +407,7 @@ const Dashboard = () => {
                 alt="add"
               />
             </button>)}
-            <BottomUpMenu options={['Dashboard','Links', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen}  />
+            <BottomUpMenu options={['Dashboard','Link', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen}  />
     </section>
   );
 };

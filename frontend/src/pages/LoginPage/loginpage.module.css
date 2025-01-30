@@ -4,11 +4,7 @@
   display: flex;
   align-items: center;
   overflow-y: hidden;
-
 }
-
-
-
 
 .leftContainer {
   flex: 1;
@@ -26,13 +22,12 @@
   left: 0;
 }
 
-.logo{
+.logo {
   position: absolute;
   top: 28px;
   left: 30px;
   z-index: 2;
 }
-
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover {
@@ -53,7 +48,7 @@ input:-webkit-autofill:hover {
   position: relative;
 }
 
-.loginContainer nav{
+.loginContainer nav {
   margin-top: 26px;
   height: 39px;
   width: 100%;
@@ -63,7 +58,8 @@ input:-webkit-autofill:hover {
   padding-right: 39px;
 }
 
-.loginContainer .navSignUp{
+.loginContainer .navSignUp,
+.loginContainer .navLogin {
   background-color: transparent;
   border: none;
   display: flex;
@@ -71,27 +67,33 @@ input:-webkit-autofill:hover {
   align-items: center;
   font-size: 1.4rem;
   font-weight: 600;
-  color:#3B3C51;
-  margin:0px 13px;
+  color: #3b3c51;
+  margin: 0px 13px;
 }
 
-.loginContainer .navLogin{
-  background-color:#1B48DA;
+.loginContainer .navLogin:hover,
+.loginContainer .navSignUp:hover {
+  background-color: #1b48da;
   border: none;
   border-radius: 6px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color:white;
-  margin:0px 13px;
-  padding:10px 14px;
+  color: white;
+  margin: 0px 13px;
+  padding: 10px 14px;
 }
-.heading{
+
+.loginContainer .navLogin.active,
+.loginContainer .navSignUp.active {
+  background-color: #1b48da;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  margin: 0px 13px;
+  padding: 10px 14px;
+}
+.heading {
   position: absolute;
-  top:127px;
-  left:100px;
+  top: 127px;
+  left: 100px;
   font-size: 2rem;
   font-weight: 600;
 }
@@ -107,7 +109,7 @@ input:-webkit-autofill:hover {
   margin-top: 134px;
 }
 
-.emptySpace{
+.emptySpace {
   width: 100%;
   height: 40px;
 }
@@ -123,11 +125,9 @@ input:-webkit-autofill:hover {
   margin-bottom: 24px;
 }
 
-.passwordForm{
+.passwordForm {
   margin-bottom: 27px;
 }
-
-
 
 .emailForm input,
 .passwordForm input,
@@ -157,7 +157,7 @@ input:-webkit-autofill:hover {
 .loginButton {
   width: 100%;
   aspect-ratio: 7.63;
-  background-color: #1B48DA;
+  background-color: #1b48da;
   box-shadow: 0px 4px 10px rgba(233, 68, 75, 0.25);
   border-radius: 6px;
   display: flex;
@@ -202,13 +202,13 @@ input:-webkit-autofill:hover {
 .signUpText {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #3B3C51;
+  color: #3b3c51;
   text-align: center;
   display: flex;
 }
 
 .signUpText a {
-  color: #1B48DA;
+  color: #1b48da;
   text-decoration: none;
   transform: 150ms ease-in-out;
 }
@@ -217,43 +217,6 @@ input:-webkit-autofill:hover {
   cursor: pointer;
   filter: brightness(0.8);
   transform: scale(1.05);
-}
-
-@media screen and (max-width: 1080px) {
-  .behindContainer .leftImage {
-    width: 25%;
-    aspect-ratio: 1;
-    left: 3%;
-  }
-
-  .behindContainer .rightImage {
-    width: 10%;
-    aspect-ratio: 0.5;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .behindContainer .leftImage {
-    top: 120px;
-  }
-
-  .loginPage .arrowBox {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .loginContainer .loginForm {
-    min-width: 90%;
-  }
-
-  .behindContainer .leftImage {
-    top: 30px;
-  }
-
-  .loginPage nav {
-    padding-left: 20px;
-  }
 }
 
 .error {
@@ -272,4 +235,32 @@ input:-webkit-autofill:hover {
 .errorField input:focus {
   outline: none;
   box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Optional: Red shadow on focus */
+}
+
+@media screen and (max-width: 980px) {
+  .leftContainer {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .loginContainer .loginForm {
+    min-width: 0px;
+    margin-top: 100px;
+  }
+
+  .loginContainer {
+    padding: 0px 20px;
+  }
+
+  .heading {
+    top: 100px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .loginContainer .navSignUp,
+  .loginContainer .navLogin {
+    display: none;
+  }
 }
