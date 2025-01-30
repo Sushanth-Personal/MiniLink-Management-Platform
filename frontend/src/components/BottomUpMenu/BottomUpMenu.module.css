@@ -16,7 +16,7 @@
 .menuContainer {
   height: 100vh;
   position: fixed;
-  bottom: -100%; /* Initially hidden, at the bottom of the screen */
+  bottom: -200%; /* Initially hidden, at the bottom of the screen */
   left: 0;
   width: 100%;
   background-color: #333;

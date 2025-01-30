@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect } from "react";
+import { useReducer, useState, useEffect,useRef } from "react";
 import useAuth from "../../customHooks/useAuth";
 import styles from "./dashboard.module.css";
 import Modal from "../../components/Modal/Modal";
@@ -11,6 +11,7 @@ import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";
 import { useUserContext } from "../../Contexts/UserContext";
 import useScreenSize from "../../customHooks/useScreenSize";
 import BottomUpMenu from "../../components/BottomUpMenu/BottomUpMenu";
+
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -72,10 +73,13 @@ const Dashboard = () => {
     setModalType,
     userData,
   } = useUserContext();
+
+  const menuButtonRef = useRef(null);
   const handleCreateNew = () => {
     setModalType("createNew"); // Set modal type based on need
     setShowModal(true);
   };
+
 
   useEffect(() => {
     console.log("userData", userData);
@@ -256,6 +260,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.rightNav}>
             <div 
+            ref={menuButtonRef}
             role="button"
             onClick={toggleMenu}
             className={styles.shortForm}>
@@ -407,7 +412,7 @@ const Dashboard = () => {
                 alt="add"
               />
             </button>)}
-            <BottomUpMenu options={['Dashboard','Link', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen}  />
+            <BottomUpMenu options={['Dashboard','Link', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} buttonRef={menuButtonRef} />
     </section>
   );
 };
