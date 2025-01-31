@@ -119,7 +119,7 @@ const LoginPage = () => {
       console.log(response);
       setIsLoading(false);
 
-      if (response === "Success") {
+      if (response.message === "Success") {
         setIsJustRegistered(true);
         toast.success("Registeration Successful!", {
           position: "top-right",
@@ -169,17 +169,19 @@ const LoginPage = () => {
 
     try {
       const response = await loginUser(email, password);
-
-      toast.success("Login successful!", {
-        position: "top-right",
-        autoClose: 3000, // Closes toast after 3 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      console.log("Login",response);
+      if (response.message === "Success") {
+        toast.success("Login successful!", {
+          position: "top-right",
+          autoClose: 3000, // Closes toast after 3 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
 
       setIsLoading(false);
       if (response.message === "Success") {
@@ -240,14 +242,18 @@ const LoginPage = () => {
         )}
         <nav>
           <button
-            onClick ={() =>setIsLogin(false)}
-            className={`${styles.navLogin} ${isLogin ? "" : styles.active}`} // Add the active class if isLogin is falsestyles.navSignUp}
+            onClick={() => setIsLogin(false)}
+            className={`${styles.navLogin} ${
+              isLogin ? "" : styles.active
+            }`} // Add the active class if isLogin is falsestyles.navSignUp}
           >
             Sign Up
           </button>
           <button
             onClick={() => setIsLogin(true)}
-            className={`${styles.navLogin} ${isLogin ? styles.active : ""}`}
+            className={`${styles.navLogin} ${
+              isLogin ? styles.active : ""
+            }`}
           >
             Login
           </button>
@@ -258,7 +264,7 @@ const LoginPage = () => {
 
         <div className={styles.loginForm}>
           <>
-            {!isLogin &&(
+            {!isLogin && (
               <div
                 className={`${styles.userNameForm} ${
                   errors.username ? styles.errorField : ""

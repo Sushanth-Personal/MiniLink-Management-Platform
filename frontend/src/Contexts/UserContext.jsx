@@ -20,6 +20,8 @@ export const UserProvider = ({ children }) => {
   const [modalType, setModalType] = useState(null);
   const [expirySwitch, setExpirySwitch] = useState(true);
   const [clearModal, setClearModal] = useState(false);
+  const [linkData, setLinkData] = useState([]);
+
   const value = useMemo(
     () => ({
       userId,
@@ -47,7 +49,9 @@ export const UserProvider = ({ children }) => {
       expirySwitch,
       setExpirySwitch,
       clearModal,
-      setClearModal
+      setClearModal,
+      linkData,
+      setLinkData
     }),
     [
       userId,
@@ -75,7 +79,9 @@ export const UserProvider = ({ children }) => {
       expirySwitch,
       setExpirySwitch,
       clearModal,
-      setClearModal
+      setClearModal,
+      linkData,
+      setLinkData
     ]
   );
 

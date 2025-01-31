@@ -56,29 +56,50 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid userId format" });
     }
 
-    const user= await User.findById(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const { username, email, contact } = req.body;
-    
+
+    // Validate email format
+    if (email) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+
+      // Check if email already exists in the database (excluding current user)
+      const existingEmail = await User.findOne({ email, _id: { $ne: userId } });
+      if (existingEmail) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+    }
+
+    // Validate contact number (must be exactly 10 digits)
+    if (contact && !/^\d{10}$/.test(contact)) {
+      return res.status(400).json({ message: "Contact number must be exactly 10 digits" });
+    }
+
+    // Update fields if provided
     user.username = username || user.username;
     user.email = email || user.email;
     user.contact = contact || user.contact;
 
-    await user.save();  
+    await user.save();
 
     return res.status(200).json({ message: "User data updated successfully" });
 
   } catch (error) {
-    console.error(error);
+    console.error("Error updating user data:", error);
     return res.status(500).json({
       message: "An error occurred while updating user data",
     });
   }
 };
+
+
 
 const deleteUser = async (req, res) => {
   try {
@@ -170,7 +191,7 @@ const postUrl = async (req, res) => {
 };
 
 const updateUrl = async (req, res) => {
-  const { url, expiry, remarks } = req.body;
+  const {shortUrl, url, expiry, remarks } = req.body;
 
   // Get userId from the middleware-augmented req object
   const userId = req.user.id;
@@ -180,7 +201,7 @@ const updateUrl = async (req, res) => {
   }
 
   try {
-    const urlReq = await Url.findOne({ url });
+    const urlReq = await Url.findOne({ shortUrl });
 
     if (!urlReq) {
       return res.status(404).json({ message: "URL not found." });
@@ -538,6 +559,20 @@ const deleteUrl = async (req, res) => {
   }
 };
 
+const logoutUser = (req, res) => {
+  console.log("Im here")
+  res.cookie("token", "", {
+    expires: new Date(0), // Expire the cookie immediately
+    httpOnly: true,       // Prevent access from JavaScript
+    secure: true,         // Only allow cookies over HTTPS
+    sameSite: "Lax",     // Required for cross-site cookies
+    path: "/"             // Ensure it applies to the entire domain
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+};
+
+module.exports = { logoutUser };
 
 
 module.exports = {
@@ -550,5 +585,6 @@ module.exports = {
   getUrlsByUser,
   getAnalytics,
   getClicks,
-  deleteUrl
+  deleteUrl,
+  logoutUser
 };

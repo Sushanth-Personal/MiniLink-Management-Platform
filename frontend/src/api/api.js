@@ -132,14 +132,14 @@ export const postUrl = async (url, remarks, expiry) => {
 }
 
 
-export const updateUrl = async (url, remarks, expiry) => {
+export const updateUrl = async (shortUrl,url, remarks, expiry) => {
   try {
     console.log(url, remarks, expiry);
     let response;
     if (expiry === "Select Expiry Date and Time") {
       response = await api.put(
         "/api/url",
-        { url, remarks },
+        { shortUrl,url, remarks },
         {
           withCredentials: true,
         }
@@ -147,7 +147,7 @@ export const updateUrl = async (url, remarks, expiry) => {
     } else {
       response = await api.put(
         "/api/url",
-        { url, remarks, expiry },
+        { shortUrl,url, remarks, expiry },
         {
           withCredentials: true,
         }
@@ -178,10 +178,10 @@ export const updateUser = async (updatedData) => {
     const response = await api.put(`/api/user/`, updatedData, {
       withCredentials: true,
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error updating user:", error.response.data.message);
-    return error.response.data.message;
+    return error.response.data;
   }
 };
 

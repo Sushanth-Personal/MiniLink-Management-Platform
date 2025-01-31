@@ -152,13 +152,13 @@
   white-space: nowrap; /* Prevents the URL from wrapping */
   border-bottom: none;
   height: 58px;
+  min-width: 150px;
 }
 
 .shortUrl {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 80%;
 }
 
 .urlCell {

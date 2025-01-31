@@ -7,6 +7,7 @@ const BottomUpMenu = ({
   isOpen,
   setIsOpen,
   buttonRef,
+  handles
 }) => {
   const menuRef = useRef(null);
 
@@ -37,7 +38,7 @@ const BottomUpMenu = ({
   }, [isOpen, setIsOpen, buttonRef]); // Dependencies: run the effect when `isOpen` or `buttonRef` changes
 
   // Handle button click to dispatch the corresponding action and close the menu
-  const handleClick = (option) => {
+  const handleClick = (option,index) => {
     let actionType;
     switch (option) {
       case "Dashboard":
@@ -51,6 +52,8 @@ const BottomUpMenu = ({
         break;
       case "Link":
         actionType = "SET_LINK_ACTIVE";
+        break;
+        case "Logout": handles[index]();
         break;
       default:
         actionType = ""; // Default case (no action)
@@ -79,7 +82,7 @@ const BottomUpMenu = ({
             <li
               key={index}
               className={styles.menuOption}
-              onClick={() => handleClick(option)} // Handle click event
+              onClick={() => handleClick(option,index)} // Handle click event
             >
               {option}
             </li>

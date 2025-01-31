@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+
 import useFetch from "../../customHooks/useFetch"; // Import the custom hook
 import styles from "./ResultTable.module.css";
 import { useUserContext } from "../../Contexts/UserContext";
 import { deleteUrl } from "../../api/api";
-const ResultTable = ({ handleEditLinkClick }) => {
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const ResultTable = ({
+  handleEditLinkClick,
+  query,
+}) => {
   const {
     setPageUrlData,
     refreshData,
@@ -27,7 +32,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
-  const pageSize = 2; // Set the number of items per page
+  const pageSize = 4; // Set the number of items per page
 
   const {
     data: fetchedData,
@@ -67,6 +72,20 @@ const ResultTable = ({ handleEditLinkClick }) => {
   useEffect(() => {
     console.log("Total pages:", totalPages);
   }, [totalPages]);
+
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Handle search filter
+  useEffect(() => {
+    if (query) {
+      const filtered = data.filter((item) =>
+        item.remarks.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data);
+    }
+  }, [query, data]);
 
   const handleSort = (key, direction) => {
     const sortedData = [...data].sort((a, b) => {
@@ -115,10 +134,24 @@ const ResultTable = ({ handleEditLinkClick }) => {
   const handleDeleteLink = async (rowId) => {
     try {
       if (!rowId) return;
-      await deleteUrl(rowId);
-      setConfirmDeleteUrl(false);
-      setShowConfirmationModal(false);
-      refetch();
+      const response = await deleteUrl(rowId);
+      console.log(response);
+      if (response.message === "URL deleted successfully") {
+
+        toast.success("Deleted Successfully ...", {
+                position: "top-right",
+                autoClose: 2000, // Closes toast after 3 seconds
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+        setConfirmDeleteUrl(false);
+        setShowConfirmationModal(false);
+        refetch();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -162,7 +195,7 @@ const ResultTable = ({ handleEditLinkClick }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
+            {filteredData.map((row, index) => (
               <tr key={row._id} className={styles.row}>
                 <td className={styles.cell}>
                   {new Date(row.expiry).toLocaleString("en-US", {

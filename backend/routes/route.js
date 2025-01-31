@@ -10,6 +10,7 @@ const {
   getAnalytics,
   getClicks,
   deleteUrl,
+  logoutUser
 } = require("../controllers/mainController.js");
 
 router.get("/user", getUser);
@@ -21,6 +22,7 @@ router.put("/url", updateUrl);
 router.get("/url", getUrlsByUser);
 router.get("/analytics", getAnalytics);
 router.get("/clicks", getClicks);
+router.post("/logout", logoutUser);
 router.get("/", (req, res) =>
   res.status(200).json({ message: "Connected" })
 );

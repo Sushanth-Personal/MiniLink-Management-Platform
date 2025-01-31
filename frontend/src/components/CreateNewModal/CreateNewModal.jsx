@@ -5,14 +5,17 @@ import { useState, useEffect } from "react";
 import { postUrl, updateUrl } from "../../api/api";
 import { useUserContext } from "../../Contexts/UserContext";
 import { format, parseISO } from "date-fns";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const CreateNewModal = (WrappedComponent) => {
   return function ModalContent({ modalType, ...props }) {
-    const [expiry, setExpiry] = useState(
-      "Select Expiry Date and Time"
-    );
+    const [expiry, setExpiry] = useState("Select Expiry Date and Time");
     const [remarks, setRemarks] = useState("");
     const [url, setUrl] = useState("");
+    const [shortUrl, setShortUrl] = useState("");
+    const [errors, setErrors] = useState({});
 
     const {
       pageUrlData,
@@ -22,78 +25,73 @@ const CreateNewModal = (WrappedComponent) => {
       setExpirySwitch,
       expirySwitch,
     } = useUserContext();
+
     const [data, setData] = useState(pageUrlData[editLinkClicked]);
 
     useEffect(() => {
       if (data && data.expiry && modalType === "edit") {
-        // Format the existing expiry date
-        const formattedExpiry = format(
-          parseISO(data.expiry),
-          "MMM dd, yyyy, hh:mm a"
-        );
+        const formattedExpiry = format(parseISO(data.expiry), "MMM dd, yyyy, hh:mm a");
         setExpiry(formattedExpiry);
-        console.log("Formatted preloaded expiry:", formattedExpiry);
       }
       if (data && modalType === "edit") {
         setUrl(data.url);
+        setShortUrl(data.shortUrl);
         setRemarks(data.remarks);
       }
-     
     }, [data]);
 
     useEffect(() => {
-      if(!expirySwitch){
+      if (!expirySwitch) {
         setExpiry("Select Expiry Date and Time");
       }
-    },[expirySwitch])
+    }, [expirySwitch]);
+
+    const validateForm = () => {
+      const newErrors = {};
+      if (!url.trim()) newErrors.url = "Destination URL is required!";
+      if (!remarks.trim()) newErrors.remarks = "Remarks are required!";
+      if (expirySwitch && expiry === "Select Expiry Date and Time") {
+        newErrors.expiry = "Expiry date is required!";
+      }
+      console.log("newError",newErrors);
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
 
     const handleSave = async () => {
+      if (!validateForm()) return;
+      console.log('shortUrl', shortUrl);
       try {
-        console.log(url, remarks, expiry);
-      
-        const response = await updateUrl(url, remarks, expiry);
-        console.log(response.data);
+        const response = await updateUrl(shortUrl,url, remarks, expiry);
+        if(response.message ==="Shortened URL updated successfully."){
+          toast.success("Update Successful ...", {
+                  position: "top-right",
+                  autoClose: 3000, // Closes toast after 3 seconds
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+        }
         setData(response.data);
         setCloseModal(true);
         setRefreshData(true);
         setRemarks("");
         setExpiry("Select Expiry Date and Time");
         setUrl("");
+        
       } catch (error) {
         console.log(error);
       }
     };
-    const handleSwitchChange = (state) => {
-      setExpirySwitch(state); // Directly set the new state
-    };
-
-    const handleDateSelection = (date) => {
-      // Format the selected date
-      const formattedDate = format(date, "MMM dd, yyyy, hh:mm a");
-      setExpiry(formattedDate); // Update expiry with formatted date
-      console.log("Selected date (formatted):", formattedDate);
-    };
-
-    useEffect(() => {
-      console.log("expirySwitch:", expirySwitch);
-    }, [expirySwitch]);
 
     const handleCreateNew = async () => {
-      if (!url.trim()) {
-        alert("Destination URL is required!");
-        return;
-      }
-
-      if (!remarks.trim()) {
-        alert("Remarks are required!");
-        return;
-      }
-
+      if (!validateForm()) return; // Prevent submission if validation fails
+    
       try {
         const response = await postUrl(url, remarks, expiry);
-        console.log(response.data);
-        alert("Link created successfully!");
-        // Optionally clear form fields after success
         setUrl("");
         setRemarks("");
         setExpiry("Select Expiry Date and Time");
@@ -102,145 +100,86 @@ const CreateNewModal = (WrappedComponent) => {
         setRefreshData(true);
       } catch (error) {
         console.error("Error creating link:", error);
-        alert("Failed to create link. Please try again.");
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          general: "Failed to create link. Please try again.",
+        }));
       }
     };
+    
+    const handleSwitchChange = (state) => {
+      setExpirySwitch(state);
+    };
 
-    let content = null;
+    const handleDateSelection = (date) => {
+      const formattedDate = format(date, "MMM dd, yyyy, hh:mm a");
+      setExpiry(formattedDate);
+    };
 
-    if (modalType === "createNew") {
-      content = (
-        <>
-          <div className={styles.top}>
-            <div className={styles.destinationUrlContainer}>
-              <span>
-                Destination Url <p>*</p>
-              </span>
-              <input
-                type="url"
-                placeholder="Enter URL to be shortened"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                required
-              />
-            </div>
-            <div
-              className={`${styles.destinationUrlContainer} ${styles.remarksContainer}`}
-            >
-              <span>
-                Remarks <p>*</p>
-              </span>
-              <textarea
-                placeholder="Add remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                required
-              />
-            </div>
-            <div className={styles.linkExpiry}>
-              <span>Link Expiration</span>
-              <Switch
-                initialChecked={expirySwitch}
-                onChange={handleSwitchChange}
-              />
-            </div>
-            <div className={styles.datePicker}>
-              <div className={styles.displayField}>{expiry}</div>
-              <div className={styles.datePickerContainer}>
-                <DatePicker
-                  handleDateSelection={handleDateSelection}
-                />
-              </div>
-            </div>
-          </div>
-          <div className={styles.actionBar}>
-            <button
-              className={styles.clearButton}
-              onClick={() => {
-                setUrl("");
-                setRemarks("");
-                setExpiry("Select Expiry Date and Time");
-                setExpirySwitch(true);
-              }}
-            >
-              Clear
-            </button>
-            <button
-              onClick={handleCreateNew}
-              className={styles.createButton}
-            >
-              Create new
-            </button>
-          </div>
-        </>
-      );
-    } else if (modalType === "edit") {
-      content = (
-        <>
-          <div className={styles.top}>
-            <div className={styles.destinationUrlContainer}>
-              <span>
-                Destination Url <p>*</p>
-              </span>
-              <input
-                type="url"
-                placeholder="Enter URL to be shortened"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                required
-              />
-            </div>
-            <div
-              className={`${styles.destinationUrlContainer} ${styles.remarksContainer}`}
-            >
-              <span>
-                Remarks <p>*</p>
-              </span>
-              <textarea
-                placeholder="Add remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                required
-              />
-            </div>
-            <div className={styles.linkExpiry}>
-              <span>Link Expiration</span>
-              <Switch
-                initialChecked={expirySwitch}
-                onChange={handleSwitchChange}
-              />
-            </div>
-            <div className={styles.datePicker}>
-              <div className={styles.displayField}>{expiry}</div>
-              <div className={styles.datePickerContainer}>
-                <DatePicker
-                  handleDateSelection={handleDateSelection}
-                />
-              </div>
-            </div>
-          </div>
-          <div className={styles.actionBar}>
-            <button
-              className={styles.clearButton}
-              onClick={() => {
-                setUrl("");
-                setRemarks("");
-                setExpiry("Select Expiry Date and Time");
-                setExpirySwitch(true);
-              }}
-            >
-              Clear
-            </button>
-            <button
-              onClick={handleSave}
-              className={styles.createButton}
-            >
-              Save
-            </button>
-          </div>
-        </>
-      );
-    }
+    let content = (
+      <>
+        <div className={styles.top}>
+  <div className={styles.destinationUrlContainer}>
+    <span>
+      Destination Url <p>*</p>
+    </span>
+    <input
+      type="url"
+      placeholder="Enter URL to be shortened"
+      value={url}
+      onChange={(e) => setUrl(e.target.value)}
+    />
+    {errors.url && <p className={styles.error}>{errors.url}</p>}
+  </div>
+  <div className={`${styles.destinationUrlContainer} ${styles.remarksContainer}`}>
+    <span>
+      Remarks <p>*</p>
+    </span>
+    <textarea
+      placeholder="Add remarks"
+      value={remarks}
+      onChange={(e) => setRemarks(e.target.value)}
+    />
+    {errors.remarks && <p className={styles.error}>{errors.remarks}</p>}
+  </div>
+  <div className={styles.linkExpiry}>
+    <span>Link Expiration</span>
+    <Switch initialChecked={expirySwitch} onChange={handleSwitchChange} />
+  </div>
+  <div className={styles.datePicker}>
+    <div className={styles.displayField}>{expiry}</div>
+    <div className={styles.datePickerContainer}>
+      <DatePicker handleDateSelection={handleDateSelection} />
+    </div>
+   
+
+  </div>
+  {errors.expiry && <p className={`${styles.error} ${styles.expiryError}`}>{errors.expiry}</p>}
+  {errors.general && <p className={styles.error}>{errors.general}</p>} {/* General error message */}
+</div>
+
+        <div className={styles.actionBar}>
+          <button
+            className={styles.clearButton}
+            onClick={() => {
+              setUrl("");
+              setRemarks("");
+              setExpiry("Select Expiry Date and Time");
+              setExpirySwitch(true);
+              setErrors({});
+            }}
+          >
+            Clear
+          </button>
+          <button
+            onClick={modalType === "createNew" ? handleCreateNew : handleSave}
+            className={styles.createButton}
+          >
+            {modalType === "createNew" ? "Create new" : "Save"}
+          </button>
+        </div>
+      </>
+    );
 
     return <WrappedComponent {...props}>{content}</WrappedComponent>;
   };

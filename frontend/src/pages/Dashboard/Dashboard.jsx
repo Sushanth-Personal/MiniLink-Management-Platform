@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect,useRef } from "react";
+import { useReducer, useState, useEffect, useRef } from "react";
 import useAuth from "../../customHooks/useAuth";
 import styles from "./dashboard.module.css";
 import Modal from "../../components/Modal/Modal";
@@ -11,7 +11,7 @@ import AnalyticsTable from "../../components/AnalyticsTable/AnalyticsTable";
 import { useUserContext } from "../../Contexts/UserContext";
 import useScreenSize from "../../customHooks/useScreenSize";
 import BottomUpMenu from "../../components/BottomUpMenu/BottomUpMenu";
-
+import axios from "axios";
 // Initial state for the reducer
 const initialState = {
   dashboardActive: true, // Default active button
@@ -64,6 +64,8 @@ const Dashboard = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [isLogout, setIsLogout] = useState(false);
   const {
     setEditLinkClicked,
     closeModal,
@@ -72,14 +74,26 @@ const Dashboard = () => {
     modalType,
     setModalType,
     userData,
+    setPageUrlData,
+    pageUrlData
   } = useUserContext();
 
   const menuButtonRef = useRef(null);
+
+  let baseURL;
+
+  if (import.meta.env.VITE_API_STATUS === "DEVELOPMENT") {
+    baseURL = `http://localhost:${import.meta.env.VITE_API_PORT}`;
+  }
+
+  if (import.meta.env.VITE_API_STATUS === "PRODUCTION") {
+    baseURL = import.meta.env.VITE_API_BASE_URL;
+  }
+
   const handleCreateNew = () => {
     setModalType("createNew"); // Set modal type based on need
     setShowModal(true);
   };
-
 
   useEffect(() => {
     console.log("userData", userData);
@@ -92,10 +106,46 @@ const Dashboard = () => {
     }
   }, [closeModal]);
 
+  useEffect(() => {
+    if (isLogout) {
+      console.log("isLogout", isLogout);
+      handleLogoutRequest();
+    }
 
+    const handleLogoutRequest = async () => {};
+  }, [isLogout]);
+
+
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(
+        `${baseURL}/api/logout`, // Endpoint
+        {}, // No request body needed for logout
+        {
+          withCredentials: true, // Send cookies with request
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Logged out, cookies cleared");
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
+  const handleQuery = (query) => {
+    console.log("Query:", query, state.linkActive);
+    if (!state.linkActive) {
+      dispatch({ type: "SET_LINK_ACTIVE" });
+    }
+    setQuery(query);
+  };
 
   const toggleMenu = () => {
-    setIsMenuOpen(prevState => !prevState);
+    setIsMenuOpen((prevState) => !prevState);
     console.log(isMenuOpen);
   };
 
@@ -211,7 +261,7 @@ const Dashboard = () => {
           <div className={styles.leftNav}>
             {tabletSize && (
               <img
-                className = {styles.logo}
+                className={styles.logo}
                 src="https://res.cloudinary.com/dtu64orvo/image/upload/v1738152167/download_1_dbcvdx.svg"
                 alt="logo"
               />
@@ -237,119 +287,53 @@ const Dashboard = () => {
           </div>
 
           <div className={styles.midNav}>
-           
-           {!mobileHorizontalSize && (<button
-              onClick={handleCreateNew}
-              className={styles.createNew}
-            >
-              <img
-                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634367/Frame_1_rq3xx8.png"
-                alt="add"
-              />
-              Create new
-            </button>)}
-            
+            {!mobileHorizontalSize && (
+              <button
+                onClick={handleCreateNew}
+                className={styles.createNew}
+              >
+                <img
+                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634367/Frame_1_rq3xx8.png"
+                  alt="add"
+                />
+                Create new
+              </button>
+            )}
+
             <div className={styles.searchContainer}>
               <img src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634977/Frame_2_cs2ror.png" />
               <input
                 type="text"
                 name="remarks"
                 placeholder="Search by remarks"
+                value={query}
+                onChange={(e) => handleQuery(e.target.value)}
               />
             </div>
           </div>
           <div className={styles.rightNav}>
-            <div 
-            ref={menuButtonRef}
-            role="button"
-            onClick={toggleMenu}
-            className={styles.shortForm}>
+            <div
+              ref={menuButtonRef}
+              role="button"
+              onClick={toggleMenu}
+              className={styles.shortForm}
+            >
               {userData && userData.username
                 ? getShortForm(userData.username)
                 : "SU"}
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className={`${styles.logout} ${
+              isMenuOpen && !tabletSize ? styles.active : ""
+            }`}
+          >
+            Logout
+          </button>
         </nav>
-       
-        {/* {tabletSize && (
-          <div className={styles.menuBar}>
-            <div className={styles.menuTray}>
-              {tabletSize && (
-                <div className={styles.leftNavMobile}>
-                  <img
-                    src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634206/%EF%B8%8F_mhduvo.png"
-                    alt="goodmorning"
-                  />
-                  <p>
-                    Good morning, {userData.username}
-                    <span>
-                      {new Date().toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </p>
-                </div>
-              )}
-              <button
-                onClick={() =>
-                  dispatch({ type: "SET_DASHBOARD_ACTIVE" })
-                }
-                className={`${styles.trayButtons} ${
-                  state.dashboardActive ? styles.active : ""
-                }`}
-              >
-                <img
-                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624518/Icons_zqiriu.png"
-                  alt="dashboard"
-                />
-                Dashboard
-              </button>
-              <button
-                onClick={() => dispatch({ type: "SET_LINK_ACTIVE" })}
-                className={`${styles.trayButtons} ${
-                  state.linkActive ? styles.active : ""
-                }`}
-              >
-                <img
-                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624522/Icon_rahplm.png"
-                  alt="link"
-                />
-                Link
-              </button>
-              <button
-                onClick={() =>
-                  dispatch({ type: "SET_ANALYTICS_ACTIVE" })
-                }
-                className={`${styles.trayButtons} ${
-                  state.analyticsActive ? styles.active : ""
-                }`}
-              >
-                <img
-                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624528/Icon_1_g710hl.png"
-                  alt="analytics"
-                />
-                Analytics
-              </button>
-              <div
-                className={`${styles.trayButtons} ${
-                  styles.settings
-                } ${state.settingsActive ? styles.active : ""}`}
-                onClick={() =>
-                  dispatch({ type: "SET_SETTINGS_ACTIVE" })
-                }
-              >
-                <img
-                  className={styles.settingsIcon}
-                  src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737624533/Frame_vnitbr.png"
-                  alt="settings"
-                />
-                Settings
-              </div>
-            </div>
-          </div>
-        )} */}
+
         <div
           className={`${styles.mainContent} ${
             state.dashboardActive || state.settingsActive
@@ -359,8 +343,8 @@ const Dashboard = () => {
         >
           {state.linkActive && (
             <ResultTable
-              handleDeleteLinkClick={handleDeleteLinkClick}
               handleEditLinkClick={handleEditLinkClick}
+              query = {query}
             />
           )}
           {state.analyticsActive && (
@@ -374,6 +358,7 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+      {console.log("showModal,", showModal)}
       {showModal && (
         <CreateNewModalWindow
           show={showModal}
@@ -403,16 +388,33 @@ const Dashboard = () => {
           }}
         />
       )}
-          {mobileHorizontalSize && (<button
-              onClick={handleCreateNew}
-              className={styles.createNewMobile}
-            >
-              <img
-                src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634367/Frame_1_rq3xx8.png"
-                alt="add"
-              />
-            </button>)}
-            <BottomUpMenu options={['Dashboard','Link', 'Analytics', 'Settings']} dispatch={dispatch} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} buttonRef={menuButtonRef} />
+      {mobileHorizontalSize && (
+        <button
+          onClick={handleCreateNew}
+          className={styles.createNewMobile}
+        >
+          <img
+            src="https://res.cloudinary.com/dtu64orvo/image/upload/v1737634367/Frame_1_rq3xx8.png"
+            alt="add"
+          />
+        </button>
+      )}
+      {tabletSize && (
+        <BottomUpMenu
+          options={[
+            "Dashboard",
+            "Link",
+            "Analytics",
+            "Settings",
+            "Logout",
+          ]}
+          dispatch={dispatch}
+          isOpen={isMenuOpen}
+          setIsOpen={setIsMenuOpen}
+          buttonRef={menuButtonRef}
+          handles={["", "", "", "", handleLogout]}
+        />
+      )}
     </section>
   );
 };
