@@ -1,8 +1,53 @@
-# React + Vite
+# Mini Link Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Live Demo
+Check out the live demo here: **Mini Link Management Platform on Render**
 
-Currently, two official plugins are available:
+[Live Demo](https://minilink-frontend.onrender.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📸 Screenshots
+
+**Login Screen:**
+
+![Login Screenshot](login_screenshot.png)
+
+**Dashboard Screen:**
+
+![Dashboard Screenshot](dashboard_screenshot.png)
+
+## 🌟 Features
+
+- **URL Shortening:** Shortens a given URL using hashing, allowing users to use the generated link to navigate to the desired location.
+- **Authentication:** Secure authentication is implemented using HTTPS cookies.
+- **Higher-Order Components (HOC):** Modular and reusable components for efficient code management.
+- **React Toast Notifications:** Success and error messages are handled using React Toast.
+- **State Management:** Uses React Context API for efficient state handling across the application.
+- **Mobile Responsive:** Fully responsive design for seamless use on different devices.
+- **REST API Practices:** Follows RESTful API principles for efficient client-server communication.
+- **Pagination and Aggregation Pipelines:** Implemented efficient data pagination and aggregation pipelines to handle large sets of data and provide seamless user experience with fast, organized responses.
+
+## 🛠️ Technologies Used
+
+- **Frontend:** React.js for building a dynamic and interactive UI.
+- **Backend:** Node.js and Express.js for handling API requests.
+- **Database:** MongoDB for storing user data and shortened links securely.
+- **Authentication:** HTTPS cookies for secure and persistent authentication.
+- **Styling:** CSS for a modern, responsive UI.
+- **Deployment:** Hosted on Render.com for both frontend and backend.
+
+## 🧠 What I Learned
+
+- Implementing secure authentication using HTTPS cookies.
+- Building modular components using Higher-Order Components (HOC) in React.
+- Efficient state management using React Context API.
+- Enhancing user experience with toast notifications for error and success handling.
+- Designing a mobile-responsive interface for better accessibility.
+- Following REST API best practices for structured and scalable backend development.
+- Optimizing data handling with pagination and aggregation pipelines.
+
+## 🚀 Getting Started
+
+### Clone the Repository:
+
+```bash
+git clone https://github.com/Sushanth-Personal/Mini-Link-Management-Platform.git
