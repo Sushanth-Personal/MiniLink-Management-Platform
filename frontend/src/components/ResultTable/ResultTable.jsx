@@ -198,14 +198,14 @@ const ResultTable = ({
             {filteredData.map((row, index) => (
               <tr key={row._id} className={styles.row}>
                 <td className={styles.cell}>
-                  {new Date(row.expiry).toLocaleString("en-US", {
+                  {row.expiry === null?"No expiry":(new Date(row.expiry).toLocaleString("en-US", {
                     month: "short",
                     day: "2-digit",
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: false,
-                  })}
+                  }))}
                 </td>
                 <td className={`${styles.cell} ${styles.urlCell}`}>
                   {row.url}

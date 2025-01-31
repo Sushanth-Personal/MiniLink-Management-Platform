@@ -16,7 +16,6 @@ const BarChart = () => {
   // Fetch data
   const {
     data: fetchedData,
-    error,
     loading,
   } = useFetch(
     `${baseURL}/api/clicks`, // Fetch data from /api/clicks
@@ -77,7 +76,7 @@ const BarChart = () => {
     const maxClicksPerDevice = Math.max(...clickData.clicksPerDevice.map(device => device.clicks), 1);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className={styles.error}>Error: {error}</p>;
+
 
   return (
     <div className={styles.chartContainer}>

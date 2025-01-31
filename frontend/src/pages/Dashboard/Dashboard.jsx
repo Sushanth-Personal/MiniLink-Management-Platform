@@ -74,8 +74,6 @@ const Dashboard = () => {
     modalType,
     setModalType,
     userData,
-    setPageUrlData,
-    pageUrlData
   } = useUserContext();
 
   const menuButtonRef = useRef(null);
@@ -114,8 +112,6 @@ const Dashboard = () => {
 
     const handleLogoutRequest = async () => {};
   }, [isLogout]);
-
-
 
   const handleLogout = async () => {
     try {
@@ -174,12 +170,6 @@ const Dashboard = () => {
     setModalType("edit");
     setShowModal(true);
     setEditLinkClicked(rowId);
-  };
-
-  const handleDeleteLinkClick = () => {
-    console.log("delete link");
-    setModalType("deleteUrl");
-    setShowConfirmationModal(true);
   };
 
   // Wrap the Modal component with the HOC to inject dynamic content
@@ -344,7 +334,7 @@ const Dashboard = () => {
           {state.linkActive && (
             <ResultTable
               handleEditLinkClick={handleEditLinkClick}
-              query = {query}
+              query={query}
             />
           )}
           {state.analyticsActive && (

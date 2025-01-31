@@ -93,7 +93,7 @@ export const registerUser = async (username, email,contact,password) => {
       contact,
       password,
     });
-    return response.data.message; //
+    return response.data; //
     //  Return the data directly
   } catch (error) {
     console.error("Error registering:", error);

@@ -54,11 +54,12 @@
 }
 
 .cell {
-  padding: 0.5rem;
+  padding-left: 15px;
   border: 1px solid #f8f8f8;
   background-color: white;
   height: 58px;
   min-width: 150px;
+
 }
 
 .row:hover {
