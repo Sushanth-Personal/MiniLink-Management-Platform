@@ -25,24 +25,29 @@
 }
 
 .label {
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   margin-bottom: 5px;
-  font-weight: bold;
-  min-width: 100px;
+  font-weight: 500;
+  min-width: 120px;
   font-family: "Manrope", sans-serif;
 }
 
 .input {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ECECF2;
   border-radius: 4px;
   font-size: 1rem;
   max-width: 266px;
   width: 100%;
+  color:#3B3C51;
   font-family: "Manrope", sans-serif;
   font-weight: 400;
+  transform: 150ms ease-in-out; 
 }
 
+.input:hover{
+  transform: scale(1.05);
+}
 .saveButton {
   flex: 1;
   padding: 10px;
@@ -55,10 +60,12 @@
   text-align: center;
   font-weight: 500;
   font-family: "Manrope", sans-serif;
+  transform: 150ms ease-in-out;
 }
 
 .saveButton:hover {
-  background-color: #45a049;
+ transform: scale(1.05);
+ filter: brightness(1.05);
 }
 
 .buttonGroup {
@@ -79,4 +86,10 @@
   text-align: center;
   font-weight: 500;
   font-family: "Manrope", sans-serif;
+  transform: 150ms ease-in-out;
+}
+
+.deleteButton:hover{
+  transform: scale(1.05);
+  filter:brightness(1.05);
 }
