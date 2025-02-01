@@ -258,12 +258,15 @@ const LoginPage = () => {
             Login
           </button>
         </nav>
-        <h1 className={styles.heading}>
-          {isLogin ? "Login" : "Join us Today!"}
-        </h1>
+    
 
         <div className={styles.loginForm}>
           <>
+          <div className = {styles.headingRow}>
+            <h1 className={styles.heading}>
+            {isLogin ? "Login" : "Join us Today!"}
+                    </h1>
+          </div>
             {!isLogin && (
               <div
                 className={`${styles.userNameForm} ${

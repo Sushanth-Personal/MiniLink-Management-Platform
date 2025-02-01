@@ -7,13 +7,18 @@ Check out the live demo here: **Mini Link Management Platform on Render**
 
 ## 📸 Screenshots
 
-**Login Screen:**
+**Login Screen: Mobile**
+![Image](https://github.com/user-attachments/assets/1da171e0-1b89-49df-9fed-a569a0d50f43)
 
-![Login Screenshot](login_screenshot.png)
+**Login Screen: Desktop**
 
-**Dashboard Screen:**
+![Image](https://github.com/user-attachments/assets/0423c614-3f8e-41f2-aea1-fe9cad97786b)
+
+**Dashboard Screen: Mobile**
 
 ![Image](https://github.com/user-attachments/assets/a1ec792c-6f95-40b0-80e8-ed4ac1af0857)
+
+**Dashboard Screen: Desktop**
 ![Image](https://github.com/user-attachments/assets/d7358677-996d-4f3b-a5a3-bf4fc87dd1d7)
 
 ## 🌟 Features
